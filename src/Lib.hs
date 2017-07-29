@@ -1,12 +1,12 @@
 module Lib
     ( 
-      Seq,
+      Phasor,
       Tick, 
       i, o,
       run,
       rot,
       (&), (\&), (#),
-			roll,
+			conv,
 			equalize,
       someFunc
     ) where
@@ -20,10 +20,12 @@ data Tick = I | O deriving (Show, Eq)
 i = I
 o = O
 
-type Seq = [Tick]
--- Should we replace Seq with Phasor?
+type Phasor = [Tick]
 -- Should Phasor be a Type or a Type class?
-{-type Phasor = [Tick]-}
+-- Should it be a newtype? 
+--
+type Seq = [Phasor]
+
 
 class Boolean a where
   (&)  :: a -> a -> a
@@ -41,9 +43,9 @@ instance Boolean Tick where
           | otherwise = I
 
 instance  Boolean a => Boolean [a] where
-  (&)  xs ys = zipWith (&) xs ys
+  (&)  xs ys = zipWith (&)  xs ys
   (\&) xs ys = zipWith (\&) xs ys
-  (#)  xs ys = zipWith (#) xs ys
+  (#)  xs ys = zipWith (#)  xs ys
   {-(&) (x:xs) (y:ys) = (x & y) :  (xs & ys)-}
   {-(&) [] ys = ys-}
   {-(&) xs [] = xs-}
@@ -52,39 +54,41 @@ instance  Boolean a => Boolean [a] where
 -- Phasor Functions
 
 -- rotate a Phasor
-rot :: (Integral n) => Seq -> n -> Seq
+rot :: (Integral n) => Phasor -> n -> Phasor
 rot xs n 
   | n >  0 = rot (last xs : init xs) (n-1) 
   | n <  0 = rot (tail xs ++ [head xs]) (n+1)
   | n == 0 = xs 
 
+
 -- run a Phasor for n Ticks
-run :: Seq -> Int -> Seq
-run xs n = [xs !! (i `mod` length xs) | i <- [0..n-1]]
+run :: Phasor -> Int -> Phasor
+--run xs n = [xs !! (i `mod` length xs) | i <- [0..n-1]]
+run xs n = [(cycle xs) !! i | i <- [0..n-1]]
 
+-- You cannot define these two functions
+(%) :: Phasor -> Int -> Phasor
+(%) seq n = run seq n
 
+-- TODO: replace fixed-length seqs with infinite `cycle `
 -- length xs must be > length hs
-roll :: Seq -> Seq -> Seq
-roll [] _ = []
-roll _ [] = []
-roll xs (h:hs)
-	| h == I = (xs ++ zeros (length hs)) \& (O : (roll xs hs))
-  | h == O = zeros (length xs + length hs) \& (O : (roll xs hs))
+conv :: Phasor -> Phasor -> Phasor
+conv [] _ = []
+conv _ [] = []
+conv xs (h:hs)
+  | h == I = (xs ++ zeros (length hs)) \& (O : (conv xs hs))
+  | h == O = zeros (length xs + length hs) \& (O : (conv xs hs))
 
-zeros :: Int -> Seq
+-- TODO: remove: this is the same as : 
+-- [o] % n
+zeros :: Int -> Phasor
 zeros n = replicate n O
 
-equalize :: Seq -> Seq -> (Seq, Seq)
+-- get rid of?
+equalize :: Phasor -> Phasor -> (Phasor, Phasor)
 equalize xs ys 
 	| length xs > length ys = (xs, ys ++ zeros absDiff)
 	| length xs < length ys = (xs ++ zeros absDiff, ys)
   | otherwise = (xs, ys)
 		where absDiff = abs(length xs - length ys)
 
--- GRAPH
-
-data Graph a b = Empty
-             | Vertex a
-             | Overlay (Graph a b) (Graph a b)
-             | Edge (Graph a b) (Graph a b) b
-             deriving (Show)

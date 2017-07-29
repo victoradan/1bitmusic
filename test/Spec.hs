@@ -7,30 +7,30 @@ main :: IO ()
 main = defaultMain unitTests
 
 unitTests :: TestTree
-unitTests = testGroup "Tests" [seqTests, booleanTests]
+unitTests = testGroup "Tests" [phasorTests, booleanTests]
 
-booleanTests = testGroup "BooleanTests" [seqAndTest, seqOrTest, seqXorTest]
-seqTests     = testGroup "SeqTests"     [rotTest, runTest, concatTest, rollTest, equalizeTest] 
+booleanTests = testGroup "BooleanTests" [phasorAndTest, phasorOrTest, phasorXorTest]
+phasorTests     = testGroup "PhasorTests"     [rotTest, runTest, concatTest, convTest, equalizeTest] 
 
-rotTest = testGroup "rot Seq"
-  [ testCase "rot seq by 1" $
+rotTest = testGroup "rot Phasor"
+  [ testCase "rot phasor by 1" $
       rot [i,o,o] 1 @?= [o,i,o]
 
-  , testCase "rot seq by 2" $
+  , testCase "rot phasor by 2" $
       rot [i,o,o] 2 @?= [o,o,i]
 
-  , testCase "rot seq by length seq" $
+  , testCase "rot phasor by length phasor" $
       rot [i,o,o] 3 @?= [i,o,o]
 
-  , testCase "rot seq by -1" $
+  , testCase "rot phasor by -1" $
       rot [i,o,o] (-1) @?= [o,o,i]
   ]
 
-runTest = testGroup "run Seq"
-  [ testCase "run seq n < length seq" $
+runTest = testGroup "run Phasor"
+  [ testCase "run phasor n < length phasor" $
     run [i,o,o] 2 @?= [i,o]
 
-  , testCase "run seq n > length seq" $
+  , testCase "run phasor n > length phasor" $
     run [i,o,o] 6 @?= [i,o,o,i,o,o]
 
   , testCase "run n == 0" $
@@ -43,33 +43,33 @@ concatTest = testGroup "a ++ b"
     [i,o] ++ [i] @?= [i,o,i]
   ]
 
-seqAndTest = testGroup "a & b"
+phasorAndTest = testGroup "a & b"
   [ testCase "a & b" $
     ([i,i,o,o] & [i,o,i,o]) @?= [i,o,o,o]
   ]
 
-seqOrTest = testGroup "a \\& b"
+phasorOrTest = testGroup "a \\& b"
   [ testCase "a \\& b" $
     ([i,i,o,o] \& [i,o,i,o]) @?= [i,i,i,o]
   ]
 
-seqXorTest = testGroup "a # b"
+phasorXorTest = testGroup "a # b"
   [ testCase "a # b" $
     ([i,i,o,o] # [i,o,i,o]) @?= [o,i,i,o]
   ]
 
-rollTest = testGroup "roll a b"
-  [ testCase "roll [i,i,o,o] [i,o,o,i,o,o]" $
-    roll [i,i,o,o] [i,o,o,i,o,o] @?= [i,i,o,i,i,o]
+convTest = testGroup "conv a b"
+  [ testCase "conv [i,i,o,o] [i,o,o,i,o,o]" $
+    conv [i,i,o,o] [i,o,o,i,o,o] @?= [i,i,o,i,i,o]
 
-  , testCase "roll [i] [i]" $
-    roll [i] [i] @?= [i]
+  , testCase "conv [i] [i]" $
+    conv [i] [i] @?= [i]
 
-  , testCase "roll [i] [i,o]" $
-    roll [i] [i,o] @?= [i,o]
+  , testCase "conv [i] [i,o]" $
+    conv [i] [i,o] @?= [i,o]
 
-  , testCase "roll [o] [i,o]" $
-    roll [o] [i,o] @?= [o,o]
+  , testCase "conv [o] [i,o]" $
+    conv [o] [i,o] @?= [o,o]
   ]
 
 equalizeTest = testGroup "equalize a b"

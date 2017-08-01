@@ -7,28 +7,37 @@ main :: IO ()
 main = defaultMain unitTests
 
 unitTests :: TestTree
+{-unitTests = testGroup "Tests" [phasorTests, booleanTests, distributiveTest]-}
 unitTests = testGroup "Tests" [phasorTests, booleanTests]
 
 booleanTests = testGroup "BooleanTests" [phasorAndTest, phasorOrTest, phasorXorTest]
-phasorTests     = testGroup "PhasorTests"     [rotTest, runTest, concatTest, convTest, equalizeTest] 
+phasorTests  = testGroup "PhasorTests"  [runTest, concatTest, convTest, equalizeTest] 
 
-rotTest = testGroup "rot Phasor"
-  [ testCase "rot phasor by 1" $
-      rot [i,o,o] 1 @?= [o,i,o]
+-- # Property Tests
+{-distributiveTest = testGroup "distribute" -}
+  {-[ testCase "(a % n) & (b % n) == (a & b) % n" $-}
+    {-(Phasor [i,o] % 10) & ([i,o,o] % 10) @?= ([i,o] & [i,o,o]) % 10 -- @?= [i,o,o,o,o,o,i,o,o,o]-}
+  {-]-}
 
-  , testCase "rot phasor by 2" $
-      rot [i,o,o] 2 @?= [o,o,i]
+-- # Functional Tests
 
-  , testCase "rot phasor by length phasor" $
-      rot [i,o,o] 3 @?= [i,o,o]
+{-rotTest = testGroup "rot Phasor"-}
+  {-[ testCase "rot phasor by 1" $-}
+      {-rot [i,o,o] 1 @?= [o,i,o]-}
 
-  , testCase "rot phasor by -1" $
-      rot [i,o,o] (-1) @?= [o,o,i]
-  ]
+  {-, testCase "rot phasor by 2" $-}
+      {-rot [i,o,o] 2 @?= [o,o,i]-}
+
+  {-, testCase "rot phasor by length phasor" $-}
+      {-rot [i,o,o] 3 @?= [i,o,o]-}
+
+  {-, testCase "rot phasor by -1" $-}
+      {-rot [i,o,o] (-1) @?= [o,o,i]-}
+  {-]-}
 
 runTest = testGroup "run Phasor"
   [ testCase "run phasor n < length phasor" $
-    run [i,o,o] 2 @?= [i,o]
+    run (Phasor [i,o,o]) 2 @?= Phasor [i,o]
 
   , testCase "run phasor n > length phasor" $
     run [i,o,o] 6 @?= [i,o,o,i,o,o]

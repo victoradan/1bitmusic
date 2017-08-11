@@ -36,14 +36,22 @@ fold f g (+:) (|:) (&:) (#:) m =
     where rec = fold f g (+:) (|:) (&:) (#:)
 
 -- TODO : implement this via `fold`
+{-cMap :: (a -> b) -> (a -> b) -> Comp a -> b-}
+{-cMap f g comp = fold f g (:+:) (:|:) (:&:) (:#:) comp-}
 cMap :: (a -> b) -> (a -> b) -> Comp a -> Comp b
 cMap f g (Sq a) =  Sq (f a)
 cMap f g (Ph a) =  Ph (g a)
 cMap f g (c1 :+: c2) = cMap f g c1 :+: cMap f g c2
 cMap f g (c1 :|: c2) = cMap f g c1 :|: cMap f g c2
+cMap f g (c1 :&: c2) = cMap f g c1 :&: cMap f g c2
+cMap f g (c1 :#: c2) = cMap f g c1 :#: cMap f g c2
 
 (%) :: Comp (Phasor a) -> Int -> Comp (Phasor a)
 (%) comp n = cMap id (run n) comp
+{-(%) comp n = cMap (Sq . id) (Ph . (run n)) comp-}
+
+eval :: Boolean a => Comp (Phasor a) -> (Phasor a)
+eval comp = fold id id (++) (\&) (&) (#) comp
 
 -- # Ticks, Phasors...
 data Tick = I | O deriving (Show, Eq)

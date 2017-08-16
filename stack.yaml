@@ -38,10 +38,16 @@ resolver: lts-8.13
 # will not be run. This is useful for tweaking upstream packages.
 packages:
 - '.'
+#- /Users/vadan/code/riff
+#- location:
+    #git: https://bitbucket.org/robertmassaioli/riff.git
+    #commit: 01734c4
+
 # Dependency packages to be pulled from upstream that are not in the resolver
 # (e.g., acme-missiles-0.3)
 # extra-deps: []
 extra-deps: 
+  - soxlib-0.0.3
   #  - riff-0.3.0.1
   #  - wavy-0.1.0.0
 

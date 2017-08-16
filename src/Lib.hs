@@ -1,9 +1,11 @@
 module Lib
     ( 
       Phasor,
-      Tick, 
+      Tick(..), 
       i, o,
       run,
+      Comp(..),
+      eval,
       {-rot,-}
       (&), (\&), (#),
 			{-conv,-}

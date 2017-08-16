@@ -16,8 +16,12 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Lib 
+                     , Audio
 --                     Phasor
   build-depends:       base >= 4.7 && < 5
+--                     , riff
+                     , storablevector >= 0.2.12
+                     , soxlib
 --                     , algebraic-graphs >= 0.0.4 && < 1
 --                     , wavy
   default-language:    Haskell2010

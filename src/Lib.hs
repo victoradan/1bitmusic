@@ -6,13 +6,8 @@ module Lib
       run,
       Comp(..),
       eval,
-      {-rot,-}
-      (&), (\&), (#),
-			{-conv,-}
-			{-equalize,-}
-      (%)
+      (&), (\&), (#), (%)
     ) where
-
 
 
 data Comp a =
@@ -76,13 +71,21 @@ instance Boolean Tick where
   (#) x y | x == y  = O
           | otherwise = I
 
+instance Boolean Char where
+  (&) 'i' 'i' = 'i' 
+  (&) _   _   = 'o'
+
+  (\&) 'o' 'o' = 'o'
+  (\&) _   _   = 'i'
+
+  (#) x y | x == y  = 'o'
+          | otherwise = 'i'
+
+
 instance  Boolean a => Boolean [a] where
   (&)  xs ys = zipWith (&)  xs ys
   (\&) xs ys = zipWith (\&) xs ys
   (#)  xs ys = zipWith (#)  xs ys
-  {-(&) (x:xs) (y:ys) = (x & y) :  (xs & ys)-}
-  {-(&) [] ys = ys-}
-  {-(&) xs [] = xs-}
 
 type Phasor a = [a]
 
@@ -91,33 +94,3 @@ type Phasor a = [a]
 run :: Int -> Phasor a -> Phasor a
 run n xs = [(cycle xs) !! i | i <- [0..n-1]]
 --run xs n = [xs !! (i `mod` length xs) | i <- [0..n-1]]
-
-{-(%) :: Phasor a -> Int -> Phasor a-}
-{-(%) seq n = run seq n-}
-
-
--- rotate a Phasor
-{-rot :: (Integral n) => Phasor -> n -> Phasor-}
-{-rot xs n -}
-  {-| n >  0 = rot (last xs : init xs) (n-1) -}
-  {-| n <  0 = rot (tail xs ++ [head xs]) (n+1)-}
-  {-| n == 0 = xs -}
-
--- TODO: replace fixed-length seqs with infinite `cycle `
--- length xs must be > length hs
-{-conv :: Phasor -> Phasor -> Phasor-}
-{-conv [] _ = []-}
-{-conv _ [] = []-}
-{-conv xs (h:hs)-}
-  {-| h == I = (xs ++ zeros (length hs)) \& (O : (conv xs hs))-}
-  {-| h == O = zeros (length xs + length hs) \& (O : (conv xs hs))-}
-
-
--- get rid of?
-{-equalize :: Phasor -> Phasor -> (Phasor, Phasor)-}
-{-equalize xs ys -}
-	{-| length xs > length ys = (xs, ys ++ zeros absDiff)-}
-	{-| length xs < length ys = (xs ++ zeros absDiff, ys)-}
-  {-| otherwise = (xs, ys)-}
-		{-where absDiff = abs(length xs - length ys)-}
-

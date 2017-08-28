@@ -6,7 +6,9 @@ module Lib
       run,
       Comp(..),
       eval,
-      (&), (\&), (#), (%)
+      (&), (\&), (#), (%),
+      simplex,
+      sI
     ) where
 
 
@@ -60,6 +62,7 @@ class Boolean a where
   (&)  :: a -> a -> a
   (\&) :: a -> a -> a
   (#)  :: a -> a -> a
+  (!) :: a -> a
 
 instance Boolean Tick where
   (&) I I = I
@@ -71,6 +74,9 @@ instance Boolean Tick where
   (#) x y | x == y  = O
           | otherwise = I
 
+  (!) I = O
+  (!) O = I
+
 instance Boolean Char where
   (&) 'i' 'i' = 'i' 
   (&) _   _   = 'o'
@@ -81,11 +87,14 @@ instance Boolean Char where
   (#) x y | x == y  = 'o'
           | otherwise = 'i'
 
+  (!) 'i' = 'o'
+  (!) _ = 'i'
 
 instance  Boolean a => Boolean [a] where
   (&)  xs ys = zipWith (&)  xs ys
   (\&) xs ys = zipWith (\&) xs ys
   (#)  xs ys = zipWith (#)  xs ys
+  (!) (x:xs) = (!)x : map (!) xs
 
 type Phasor a = [a]
 
@@ -94,3 +103,10 @@ type Phasor a = [a]
 run :: Int -> Phasor a -> Phasor a
 run n xs = [(cycle xs) !! i | i <- [0..n-1]]
 --run xs n = [xs !! (i `mod` length xs) | i <- [0..n-1]]
+
+
+-- constructors
+simplex :: Boolean a => a -> Int -> [a]
+simplex a n = a : (replicate (n-1) ((!)a))
+
+sI = simplex I

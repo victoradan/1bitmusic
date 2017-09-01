@@ -8,7 +8,9 @@ module Lib
       eval,
       (&), (\&), (#), (%),
       simplex,
-      sI
+      sI,
+      num2ticks,
+      comp2ticks
     ) where
 
 
@@ -50,7 +52,14 @@ cMap f g (c1 :#: c2) = cMap f g c1 :#: cMap f g c2
 {-(%) comp n = cMap (Sq . id) (Ph . (run n)) comp-}
 
 eval :: Boolean a => Comp (Phasor a) -> (Phasor a)
+{-eval comp = fold (>>=  num2ticks) (>>=  num2ticks) (++) (\&) (&) (#) comp-}
 eval comp = fold id id (++) (\&) (&) (#) comp
+
+comp2ticks :: Comp [Int] -> Comp [Tick]
+comp2ticks = cMap (>>= num2ticks) (>>= num2ticks) 
+
+num2ticks :: Int -> [Tick]
+num2ticks = simplex I 
 
 -- # Ticks, Phasors...
 data Tick = I | O deriving (Show, Eq)
@@ -79,16 +88,16 @@ instance Boolean Tick where
 
 instance Boolean Char where
   (&) 'i' 'i' = 'i' 
-  (&) _   _   = 'o'
+  (&)  _   _  = 'o'
 
   (\&) 'o' 'o' = 'o'
-  (\&) _   _   = 'i'
+  (\&)  _   _  = 'i'
 
   (#) x y | x == y  = 'o'
           | otherwise = 'i'
 
   (!) 'i' = 'o'
-  (!) _ = 'i'
+  (!)  _  = 'i'
 
 instance  Boolean a => Boolean [a] where
   (&)  xs ys = zipWith (&)  xs ys

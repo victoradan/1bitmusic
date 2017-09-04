@@ -1,7 +1,8 @@
 module Main where
 
-import Lib
 import Audio
+import Comp
+import Tick
 
 seq2ints on seq = [if s == on then 1 else 0 | s <- seq]
 tick2ints = seq2ints I

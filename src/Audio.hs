@@ -30,6 +30,7 @@ tempo2audioRate :: Integral a => a -> a
 tempo2audioRate n = 44100 `div` n
 
 -- convert a Seq to 44100 16 bit train of pulses
+-- TODO: optimize. This is the slowest function of the package.
 seq2audio :: Num a => Int -> [a] -> [a]
 seq2audio _ [] = []
 seq2audio sampleRate (x:xs) = (x*2^29):(replicate ((tempo2audioRate sampleRate)-1) 0) ++ seq2audio sampleRate xs

@@ -46,6 +46,7 @@ cMap f g (c1 :#: c2) = cMap f g c1 :#: cMap f g c2
 (%) comp n = cMap id (run n) comp
 {-(%) comp n = cMap (Sq . id) (Ph . (run n)) comp-}
 
+-- collaps Comp into flat sequence of Phasors:bn
 eval :: Boolean a => Comp (Phasor a) -> (Phasor a)
 {-eval comp = cFold (>>=  num2ticks) (>>=  num2ticks) (++) (\&) (&) (#) comp-}
 eval comp = cFold id id (++) (\&) (&) (#) comp

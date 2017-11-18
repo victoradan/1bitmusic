@@ -20,6 +20,7 @@ library
                      , Phasor
                      , Boolean
                      , Audio
+                     , Compiler
 --                     Phasor
   build-depends:       base >= 4.7 && < 5
 --                     , riff

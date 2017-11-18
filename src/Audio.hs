@@ -6,7 +6,7 @@ module Audio
     list2vector
   ) where
 
-import qualified GHC.Int
+-- import qualified GHC.Int
 import qualified Data.StorableVector as SV
 import qualified Sound.SoxLib as SoxLib
 

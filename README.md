@@ -38,4 +38,3 @@ comp1 = foldl1 (:|:) ( map Ph [[i] | i <- [95..100]])
 ## Credits and References
 - [Haskell School of Music]
 - [Discrete Time 1-bit Music]
-

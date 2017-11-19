@@ -1,4 +1,4 @@
-module Tick
+module Music1Bit.Tick
   ( 
     Tick(..), 
     i, o,
@@ -8,7 +8,7 @@ module Tick
     ioi2ticks
   ) where
 
-import Boolean
+import Music1Bit.Boolean
 
 type IOI = Int -- Inter-Onset-Interval
 type Steps = Int  -- The number of Ticks in a Sequence (TicksCount): length([Tick])

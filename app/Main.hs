@@ -1,7 +1,7 @@
 module Main where
 
-import Comp (Comp( Ph, (:|:) )) 
-import Compiler 
+import Music1Bit.Comp (Comp( Ph, (:|:) )) 
+import Music1Bit.Compiler 
 
 -- minimal composition example...
 composition = foldl1 (:|:) [Ph [i] steps | i <- [95..100], let steps = 30000]

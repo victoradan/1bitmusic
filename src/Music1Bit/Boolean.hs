@@ -1,4 +1,4 @@
-module Boolean
+module Music1Bit.Boolean
   (
     Boolean,
     (&), (\&), (#), (!),

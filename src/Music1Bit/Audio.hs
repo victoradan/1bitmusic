@@ -1,4 +1,4 @@
-module Audio
+module Music1Bit.Audio
   (
     writerInfo,
     writeMono,

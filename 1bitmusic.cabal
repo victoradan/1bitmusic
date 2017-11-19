@@ -15,12 +15,12 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Tick 
-                     , Comp
-                     , Phasor
-                     , Boolean
-                     , Audio
-                     , Compiler
+  exposed-modules:     Music1Bit.Tick 
+                     , Music1Bit.Comp
+                     , Music1Bit.Phasor
+                     , Music1Bit.Boolean
+                     , Music1Bit.Audio
+                     , Music1Bit.Compiler
 --                     Phasor
   build-depends:       base >= 4.7 && < 5
 --                     , riff

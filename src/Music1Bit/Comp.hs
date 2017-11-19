@@ -1,11 +1,11 @@
-module Comp
+module Music1Bit.Comp
     ( 
       Comp(..),
       collapse,
     ) where
 
-import Tick 
-import Boolean
+import Music1Bit.Tick 
+import Music1Bit.Boolean
 
 data Comp =
       Sq [IOI]

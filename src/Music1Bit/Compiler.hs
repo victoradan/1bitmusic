@@ -1,8 +1,8 @@
-module Compiler where
+module Music1Bit.Compiler where
 
-import Audio (writeMono, seq2audio)
-import Comp
-import Tick
+import Music1Bit.Audio (writeMono, seq2audio)
+import Music1Bit.Comp
+import Music1Bit.Tick
 import GHC.Int (Int32)
 
 seq2ints :: Eq a => a -> [a] -> [Int32]

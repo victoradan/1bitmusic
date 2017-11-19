@@ -1,13 +1,10 @@
 module Phasor
   (
-    Phasor,
-    run
+    Phasor
   ) where
 
-type Phasor a = [a]
+import Tick
 
--- run a Phasor for n Ticks
-run :: Int -> Phasor a -> Phasor a
-run n xs = take n (cycle xs)
--- The following is incredibly inefficient... 
---run n xs = [(cycle xs) !! i | i <- [0..n-1]]
+type Phasor = [Tick]
+{-type Sequence = [Tick]-} -- keep this for semantics?
+

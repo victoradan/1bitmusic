@@ -1,6 +1,6 @@
 module Compiler where
 
-import Audio
+import Audio (writeMono, seq2audio)
 import Comp
 import Tick
 import GHC.Int (Int32)

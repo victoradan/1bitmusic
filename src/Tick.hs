@@ -1,17 +1,17 @@
 module Tick
   ( 
-    Phasor,
     Tick(..), 
-    Boolean,
     i, o,
     simplex,
-    sI,
-    run,
-    num2ticks
+    IOI,
+    Steps,
+    ioi2ticks
   ) where
 
 import Boolean
-import Phasor
+
+type IOI = Int -- Inter-Onset-Interval
+type Steps = Int  -- The number of Ticks in a Sequence (TicksCount): length([Tick])
 
 -- # Ticks, Phasors...
 data Tick = I | O deriving (Show, Eq)
@@ -36,8 +36,7 @@ instance Boolean Tick where
 simplex :: Boolean a => a -> Int -> [a]
 simplex a n = a : (replicate (n-1) ((!)a))
 
-sI = simplex I
 
-num2ticks :: Int -> [Tick]
-num2ticks = simplex I 
+ioi2ticks :: IOI -> [Tick]
+ioi2ticks = simplex I 
 

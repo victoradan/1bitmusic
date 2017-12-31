@@ -2,6 +2,7 @@ module Music1Bit.Comp
     ( 
       Comp(..),
       collapse,
+      run
     ) where
 
 import Music1Bit.Tick 

@@ -1,15 +1,25 @@
 import Test.Tasty
 import Test.Tasty.HUnit
+import Test.Tasty.QuickCheck as QC
 
 import Music1Bit.Comp (run)
 import Music1Bit.Tick (Tick(..))
+import Music1Bit.Boolean ((&), (\&), (#))
 
 main :: IO ()
 main = defaultMain unitTests
 
 unitTests :: TestTree
-unitTests = testGroup "Tests" [runTest]
+unitTests = testGroup "Tests" [runTest, tickTest]
 
+{-propsTests :: TestTree-}
+{-propsTests = testGroup "Properties" [runProps]-}
+
+{-runProps = testGroup "run length"-}
+  {-[-}
+    {-QC.testProperty "run length" $-}
+    {-\n xs -> length (run (n::Int) (xs::[Tick])) == n-}
+  {-]-}
 
 runTest = testGroup "run Phasor"
   [ testCase "run n < length" $
@@ -23,37 +33,18 @@ runTest = testGroup "run Phasor"
 
   ]
 
-{-concatTest = testGroup "a ++ b"-}
-  {-[ testCase "[I,O] ++ [I]" $-}
-    {-[i,o] ++ [i] @?= [i,o,i]-}
-  {-]-}
+tickTest = testGroup "a ++ b"
+  [ testCase "[I,O] ++ [I]" $
+    [I,O] ++ [I] @?= [I,O,I]
 
-{-phasorAndTest = testGroup "a & b"-}
-  {-[ testCase "a & b" $-}
-    {-([i,i,o,o] & [i,o,i,o]) @?= [i,o,o,o]-}
-  {-]-}
+  , testCase "a & b" $
+    ([I,I,O,O] & [I,O,I,O]) @?= [I,O,O,O]
 
-{-phasorOrTest = testGroup "a \\& b"-}
-  {-[ testCase "a \\& b" $-}
-    {-([i,i,o,o] \& [i,o,i,o]) @?= [i,i,i,o]-}
-  {-]-}
+  , testCase "a \\& b" $
+    ([I,I,O,O] \& [I,O,I,O]) @?= [I,I,I,O]
 
-{-phasorXorTest = testGroup "a # b"-}
-  {-[ testCase "a # b" $-}
-    {-([i,i,o,o] # [i,o,i,o]) @?= [o,i,i,o]-}
-  {-]-}
+  , testCase "a # b" $
+    ([I,I,O,O] # [I,O,I,O]) @?= [O,I,I,O]
+  ]
 
-{-convTest = testGroup "conv a b"-}
-  {-[ testCase "conv [i,i,o,o] [i,o,o,i,o,o]" $-}
-    {-conv [i,i,o,o] [i,o,o,i,o,o] @?= [i,i,o,i,i,o]-}
-
-  {-, testCase "conv [i] [i]" $-}
-    {-conv [i] [i] @?= [i]-}
-
-  {-, testCase "conv [i] [i,o]" $-}
-    {-conv [i] [i,o] @?= [i,o]-}
-
-  {-, testCase "conv [o] [i,o]" $-}
-    {-conv [o] [i,o] @?= [o,o]-}
-  {-]-}
 

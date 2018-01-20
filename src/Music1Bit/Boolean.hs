@@ -6,9 +6,9 @@ module Music1Bit.Boolean
   where
 
 class Boolean a where
-  (&)  :: a -> a -> a
-  (\&) :: a -> a -> a
-  (#)  :: a -> a -> a
+  (&) :: a -> a -> a
+  (\&):: a -> a -> a
+  (#) :: a -> a -> a
   (!) :: a -> a
 
 

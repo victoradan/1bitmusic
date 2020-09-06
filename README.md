@@ -39,6 +39,14 @@ wavify composition 1000 "test.wav"
 ```
 `wavify` takes a `Comp`, and `Int` specifying the Tick rate, and the name of the file; ir returns IO ().
 
+## Build
+- With stack: `stack build`
+- With nix: `nix-build release.nix`
+
+
+### Dependencies
+- soxlib
+
 ## Credits and References
 - [Discrete Time 1-bit Music]
 - [Haskell School of Music]

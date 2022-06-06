@@ -12,5 +12,5 @@ mkDerivation {
   testHaskellDepends = [ base tasty tasty-hunit tasty-quickcheck ];
   homepage = "https://github.com/victoradan/1bitmusic#readme";
   description = "A library for writing 1-bit music";
-  license = stdenv.lib.licenses.bsd3;
+  license = "none";
 }

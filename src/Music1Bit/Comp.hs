@@ -18,7 +18,7 @@ data Comp =
     deriving (Show)
 
 cFold :: ([IOI] -> b) -> ([IOI] -> Steps -> b) -> 
-         (b->b->b) -> (b->b->b) -> (b->b->b) -> (b->b->b) -> 
+         (b -> b -> b) -> (b -> b -> b) -> (b -> b -> b) -> (b -> b -> b) -> 
          Comp -> b
 cFold f g (+:) (|:) (&:) (#:) m =
     case m of

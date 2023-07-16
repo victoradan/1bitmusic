@@ -21,11 +21,12 @@ library
                      , Music1Bit.Boolean
                      , Music1Bit.Audio
                      , Music1Bit.Compiler
---                     Phasor
+                     , Music1Bit.Types
+                     , Music1Bit.Combinators
   build-depends:       base >= 4.7 && < 5
---                     , riff
                      , storablevector >= 0.2.12
-                     , soxlib
+--                     , riff
+                    --  , soxlib
 --                     , algebraic-graphs >= 0.0.4 && < 1
 --                     , wavy
   default-language:    Haskell2010
@@ -36,6 +37,8 @@ executable 1bitmusic-exe
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , 1bitmusic
+                     , bytestring
+                     , binary
   default-language:    Haskell2010
 
 test-suite 1bitmusic-test

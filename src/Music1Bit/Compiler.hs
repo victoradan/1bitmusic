@@ -1,7 +1,7 @@
 module Music1Bit.Compiler where
 
 -- import Music1Bit.Audio (writeMono, seq2audio)
-import Music1Bit.Comp
+-- import Music1Bit.Comp
 import Music1Bit.Tick
 import GHC.Int (Int32)
 import Data.Int (Int16 (..))

@@ -1,44 +1,40 @@
 module Music1Bit.Comp
-    ( 
-      Comp(..),
-      collapse,
-      run
-    ) where
+  (
+  )
+where
 
-import Music1Bit.Tick 
-import Music1Bit.Boolean
+import Control.Applicative
+import Data.Bits
 
-data Comp =
-      Sq [IOI]
-    | Ph [IOI] Steps
-    | Comp :+: Comp 
-    | Comp :|: Comp
-    | Comp :&: Comp 
-    | Comp :#: Comp 
-    deriving (Show)
+type Impulse = Bool
 
-cFold :: ([IOI] -> b) -> ([IOI] -> Steps -> b) -> 
-         (b -> b -> b) -> (b -> b -> b) -> (b -> b -> b) -> (b -> b -> b) -> 
-         Comp -> b
-cFold f g (+:) (|:) (&:) (#:) m =
-    case m of
-       Sq p -> f p
-       Ph p n -> g p n
-       m1 :+: m2 -> rec m1 +: rec m2
-       m1 :|: m2 -> rec m1 |: rec m2
-       m1 :&: m2 -> rec m1 &: rec m2
-       m1 :#: m2 -> rec m1 #: rec m2
-    where rec = cFold f g (+:) (|:) (&:) (#:)
+-- | Inter-Onset-Interval
+type IOI = Integer
 
--- run a Phasor for n Ticks
-run :: Int -> [Tick] -> [Tick]
-run n xs = take n (cycle xs)
+newtype Signal a = Signal {sample :: Integer -> a}
 
--- The following is incredibly inefficient... 
---run n xs = [(cycle xs) !! i | i <- [0..n-1]]
-collapsePhasor :: [IOI] -> Steps -> [Tick]
-collapsePhasor iois steps = run steps (iois >>= ioi2ticks)
+-- | Constant 0.
+silence :: Signal Impulse
+silence = Signal $ const False
 
--- collaps Comp into flat sequence of Phasors:bn
-collapse :: Comp -> [Tick]
-collapse comp = cFold (>>= ioi2ticks) collapsePhasor (++) (\&) (&) (#) comp
+-- | Impulse cycle.
+cycle :: IOI -> Signal Impulse
+cycle ioi = Signal $ \t -> t `mod` ioi == 0
+
+reverse :: Signal a -> Signal a
+reverse (Signal f) = Signal $ \t -> f (- t)
+
+-- | Mix two signals together.
+mix2 :: Signal Impulse -> Signal Impulse -> Signal Impulse
+mix2 (Signal x) (Signal y) = Signal $ \t -> x t `xor` y t
+
+-- | Mix many signals together.
+mix :: [Signal Impulse] -> Signal Impulse
+mix = foldr mix2 silence
+
+seq :: Integer -> Signal a -> Signal a -> Signal a
+seq d (Signal x) (Signal y) = Signal $ \t -> if t < d then x t else y (t - d)
+
+-- | Convolution.
+conv :: Integer -> Signal Impulse -> Signal Impulse -> Signal Impulse
+conv w (Signal f) (Signal g) = Signal $ \t -> foldr xor False [f (t - m) && g m | m <- [- w .. w]]

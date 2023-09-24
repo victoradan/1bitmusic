@@ -17,6 +17,12 @@ step f t = t `div` f
 diff :: (Integer -> Integer) -> (Integer -> Integer)
 diff s t = s t - s (t-1)
 
+train :: [Tick] -> Signal
+train ls t = cycle ls !! fromInteger t
+
+ioi2signal :: [IOI] -> Signal
+ioi2signal iois = train $ concat [True:replicate (fromInteger ioi) False | ioi <- iois]
+
 -- |Impulse-ish 
 impulse :: IOI -> Signal
 impulse ioi t = t `mod` ioi == 0
@@ -34,6 +40,13 @@ mix = foldr add silence
 
 seq :: (Signal, Integer) -> Signal -> Signal
 seq (x, d) y t = if t < d then x t else y (t - d)
+
+inverse :: Signal -> Signal
+inverse x t = not $ x t
+
+fib n = fibs !! n
+    where
+    fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
 
 -- ramp :: Integer -> Integer -> Integer -> Signal
 -- ramp interval start end t = [start, interval..end] !! t

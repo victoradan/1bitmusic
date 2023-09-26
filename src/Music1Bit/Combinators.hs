@@ -3,38 +3,38 @@ module Music1Bit.Combinators where
 import Data.Bits
 import Music1Bit.Types
 import Text.Printf (vFmt)
+
 -- import Data.List.NonEmpty
 
--- |Constant 0.
+-- | Constant 0.
 silence :: Signal
 silence = const False
 
--- |Step function
+-- | Step function
 step :: Integer -> ContSignal
 step f t = t `div` f
 
-
 diff :: (Integer -> Integer) -> (Integer -> Integer)
-diff s t = s t - s (t-1)
+diff s t = s t - s (t -1)
 
 train :: [Tick] -> Signal
 train ls t = cycle ls !! fromInteger t
 
 ioi2signal :: [IOI] -> Signal
-ioi2signal iois = train $ concat [True:replicate (fromInteger ioi) False | ioi <- iois]
+ioi2signal iois = train $ concat [True : replicate (fromInteger ioi) False | ioi <- iois]
 
--- |Impulse-ish 
+-- | Impulse-ish
 impulse :: IOI -> Signal
 impulse ioi t = t `mod` ioi == 0
 
 shift :: Integer -> Signal -> Signal
 shift int s t = s (t + int)
 
--- |Mix two signals together by adding amplitudes.
+-- | Mix two signals together by adding amplitudes.
 add :: Signal -> Signal -> Signal
 add x y t = x t `xor` y t
 
--- |Mix signals together by adding amplitudes.
+-- | Mix signals together by adding amplitudes.
 mix :: [Signal] -> Signal
 mix = foldr add silence
 
@@ -45,7 +45,7 @@ inverse :: Signal -> Signal
 inverse x t = not $ x t
 
 fib n = fibs !! n
-    where
+  where
     fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
 
 -- ramp :: Integer -> Integer -> Integer -> Signal
@@ -60,10 +60,9 @@ fib n = fibs !! n
 -- fm :: ModSignal -> Signal -> Signal
 -- fm x y t = y (t + x t)
 
-
--- |Integrate
+-- | Integrate
 integrate :: (Integer -> Integer) -> (Integer -> Integer)
-integrate s t = sum [s t' | t' <- [0..t]]
+integrate s t = sum [s t' | t' <- [0 .. t]]
 
 toInt :: Signal -> (Integer -> Integer)
 toInt s t = if s t then 1 else 0
@@ -71,12 +70,11 @@ toInt s t = if s t then 1 else 0
 fromInt :: (Integer -> Integer) -> Signal
 fromInt s t = s t /= 0
 
-
--- |Calculate an oscillation frequency for a MIDI note number, in an equally tempered scale.
+-- | Calculate an oscillation frequency for a MIDI note number, in an equally tempered scale.
 midiNoteToFreq :: (Floating a) => Int -> a
 midiNoteToFreq n =
-    f0 * (a ** (fromIntegral n - midiA4))
-    where
-        a = 2 ** (1.0 / 12.0)
-        f0 = 440.0 -- A-4 in an ETS is 440 Hz.
-        midiA4 = 69 -- A-4 in MIDI is 69.
+  f0 * (a ** (fromIntegral n - midiA4))
+  where
+    a = 2 ** (1.0 / 12.0)
+    f0 = 440.0 -- A-4 in an ETS is 440 Hz.
+    midiA4 = 69 -- A-4 in MIDI is 69.

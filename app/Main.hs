@@ -3,15 +3,15 @@
 module Main where
 
 -- import qualified Data.ByteString.Lazy as BS (concat, putStr, ByteString)
-import Music1Bit.Combinators as C
-import Music1Bit.Types as C
-import Music1Bit.Audio as Audio
 
 import Data.Binary (encode)
-import qualified Data.ByteString.Lazy as BS (concat, putStr, ByteString)
+import qualified Data.ByteString.Lazy as BS (ByteString, concat, putStr)
 import qualified GHC.Int
+import Music1Bit.Audio as Audio
+import Music1Bit.Combinators as C
+import Music1Bit.Types as C
 
-toInt:: Tick -> GHC.Int.Int32
+toInt :: Tick -> GHC.Int.Int32
 toInt x = if x then 1 else 0
 
 -- music = [ C.mix [C.impulse 102, C.impulse 100, C.impulse 101, C.impulse 99] sample | sample <- [0..100000]]
@@ -30,15 +30,23 @@ toInt x = if x then 1 else 0
 -- music = [ C.seq  (pre, 90000)  m1 n | n <- [0..5000000]]
 -- music = [ C.seq  (C.impulse 1000, 15000) (C.mix (map (C.shift (4007*5409 `div` 2) . C.impulse) [4000, 4100..5003])) sample | sample <- [0..1000000]]
 
--- | polyrhythmic clusters: 
-pre =  C.ioi2signal  $ reverse [80..1400]
-c2 = map (C.shift (5000^2 `div` 2) . C.impulse) [5000, 5005..5110]
-c3 = map (C.shift (7000^2 `div` 2) . C.impulse) [7000,7005..7400]
-c4 = map (C.shift (20000^2 `div` 2) . C.impulse) [20000,20005..20110]
-call = C.seq  (C.impulse 1000, 15000)  (C.mix (concat [c2, c3, c4])) 
-music = [call n | n <- [0..2000000]]
--- music = [pre n | n <- [0..100000]]
+-- | polyrhythmic clusters:
+pre = C.ioi2signal $ reverse [10, 200 .. 10000]
+
+phMul = 100
+
+c1 = C.shift (3000 * phMul) $ C.mix $ map C.impulse [3000 .. 3020]
+
+c2 = C.shift (5000 * phMul) $ C.mix $ map C.impulse [5000 .. 5050]
+
+c3 = C.shift (7000 * phMul) $ C.mix $ map C.impulse [7000, 7002 .. 7070]
+
+c4 = C.shift (20000 * phMul) $ C.mix $ map C.impulse [20000, 20003 .. 20200]
+
+call = C.seq (pre, 260000) (C.mix [c1, c2, c3, c4])
+
+music = map call [0 .. 10000000]
 
 main :: IO ()
 -- main = BS.putStr $ BS.concat $ map (encode . (*2^14) . Main.toInt) music
-main = Audio.writeMono "foo.wav" $ map ( (*2^28) . Main.toInt) music
+main = Audio.writeMono 44100 "foo.wav" $ map ((* 2 ^ 28) . Main.toInt) music

@@ -11,6 +11,13 @@ packages:
       size: 464
   original:
     hackage: soxlib-0.0.3.2
+- completed:
+    hackage: MemoTrie-0.6.11@sha256:edda47de940a047237c395a85ac3216db6d25888002293853d7eebd01beb5da6,1516
+    pantry-tree:
+      sha256: 38df5299ea29682697353800ff19a014c0b92ac436d939d1b62755f764a1b40f
+      size: 274
+  original:
+    hackage: MemoTrie-0.6.11
 snapshots:
 - completed:
     sha256: 32716534fff554b7f90762130fdb985cabf29f157758934dd1c8f3892a646430

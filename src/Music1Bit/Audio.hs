@@ -21,8 +21,8 @@ writerInfo numChans sampleRate precision =
             }
     }
 
-writeMono filename chunk =
-  SoxLib.withWrite (writerInfo 1 44100 16) filename $ \fmt ->
+writeMono rate filename chunk =
+  SoxLib.withWrite (writerInfo 1 rate 16) filename $ \fmt ->
     SoxLib.writeStorableVector fmt $ list2vector chunk
 
 -- list2vector :: Foreign.Storable.Storable a => [a] -> SV.Vector a

@@ -48,6 +48,7 @@ packages:
 # extra-deps: []
 extra-deps: 
 - soxlib-0.0.3.2
+- MemoTrie-0.6.11
   #  - riff-0.3.0.1
   #  - wavy-0.1.0.0
 

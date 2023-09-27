@@ -1,9 +1,9 @@
 module Music1Bit.Combinators where
 
+import qualified Data.Vector.Unboxed as V
 import Data.Bits
+import Data.MemoTrie
 import Music1Bit.Types
-import Text.Printf (vFmt)
-
 -- import Data.List.NonEmpty
 
 -- | Constant 0.
@@ -17,15 +17,25 @@ step f t = t `div` f
 diff :: (Integer -> Integer) -> (Integer -> Integer)
 diff s t = s t - s (t -1)
 
-train :: [Tick] -> Signal
-train ls t = cycle ls !! fromInteger t
+train :: V.Vector Tick -> Signal
+train ticks t = ticks V.! (fromInteger t `mod` V.length ticks)
 
 ioi2signal :: [IOI] -> Signal
-ioi2signal iois = train $ concat [True : replicate (fromInteger ioi) False | ioi <- iois]
+ioi2signal iois = train $ V.fromList $ iois2ticks iois
+
+iois2ticks :: [IOI] -> [Tick]
+iois2ticks = concatMap ioi2ticks
+
+ioi2ticks :: IOI -> [Tick]
+ioi2ticks ioi
+  | ioi == 0 = []
+  | otherwise = True : replicate (fromInteger ioi -1) False
 
 -- | Impulse-ish
 impulse :: IOI -> Signal
 impulse ioi t = t `mod` ioi == 0
+
+impulseM = memo impulse
 
 shift :: Integer -> Signal -> Signal
 shift int s t = s (t + int)
@@ -61,9 +71,6 @@ fib n = fibs !! n
 -- fm x y t = y (t + x t)
 
 -- | Integrate
-integrate :: (Integer -> Integer) -> (Integer -> Integer)
-integrate s t = sum [s t' | t' <- [0 .. t]]
-
 toInt :: Signal -> (Integer -> Integer)
 toInt s t = if s t then 1 else 0
 

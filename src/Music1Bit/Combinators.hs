@@ -10,10 +10,6 @@ import Music1Bit.Types
 silence :: Signal
 silence = const False
 
--- | Step function
-step :: Integer -> ContSignal
-step f t = t `div` f
-
 diff :: (Integer -> Integer) -> (Integer -> Integer)
 diff s t = s t - s (t -1)
 
@@ -51,21 +47,18 @@ mix = foldr add silence
 seq :: (Signal, Integer) -> Signal -> Signal
 seq (x, d) y t = if t < d then x t else y (t - d)
 
+seq' :: [(Integer, Signal)] -> Signal
+seq' ss = train $ V.fromList $ concatMap run ss
+  where
+    run :: (Integer, Signal) -> [Tick]
+    run (d, s) = map s [0..d]
+
 inverse :: Signal -> Signal
 inverse x t = not $ x t
 
 fib n = fibs !! n
   where
     fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
-
--- ramp :: Integer -> Integer -> Integer -> Signal
--- ramp interval start end t = [start, interval..end] !! t
-
--- phasor :: [Tick] -> Signal
--- phasor ts t = cycle ts !! fromInteger t
-
--- phasorMod :: [Integer] -> ModSignal
--- phasorMod ts t = cycle ts !! fromInteger t
 
 -- fm :: ModSignal -> Signal -> Signal
 -- fm x y t = y (t + x t)

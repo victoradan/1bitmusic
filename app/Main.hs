@@ -4,13 +4,10 @@ module Main where
 
 import Data.Binary (encode)
 import qualified Data.ByteString.Lazy as BS (ByteString, concat, putStr)
-import qualified GHC.Int
 import Music1Bit.Audio as Audio
 import Music1Bit.Combinators as C
 import Music1Bit.Types as C
 
-toInt :: Tick -> GHC.Int.Int32
-toInt x = if x then 1 else 0
 
 -- | polyrhythmic clusters
 pre1 = C.ioi2signal $ reverse [10, 200 .. 12002]
@@ -32,10 +29,10 @@ c3 = C.shift (7000 * phMul) $ C.mix $ map C.impulse [7000, 7002 .. 7070]
 
 c4 = C.shift (20000 * phMul) $ C.mix $ map C.impulse [20000, 20003 .. 20200]
 
-call = C.seq (pre, 380000) (C.mix [c1, c2, c3, c4])
+piece = C.seq' [(380000, pre), (12000000 , C.mix [c1, c2, c3, c4]), (380000, post)]
 
-music = map call [0 .. 20000000]
+music = map piece [0 .. 380000*2+12000000]
 
 main :: IO ()
+main = toWav "Tepoz.wav" 44100 music
 -- main = BS.putStr $ BS.concat $ map (encode . (*2^14) . Main.toInt) music
-main = Audio.writeMono 44100 "foo.wav" $ map ((* 2 ^ 28) . Main.toInt) music

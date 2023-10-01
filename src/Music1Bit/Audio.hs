@@ -1,13 +1,20 @@
 module Music1Bit.Audio
   ( writerInfo,
     writeMono,
-    list2vector,
+    toWav
   )
 where
 
--- import qualified GHC.Int
 import qualified Data.StorableVector as SV
 import qualified Sound.SoxLib as SoxLib
+import Music1Bit.Types (Tick)
+import qualified GHC.Int
+
+toWav :: String -> Double -> [Tick] -> IO ()
+toWav name sr signal = writeMono sr name $ map ((* 2 ^ 28) . toInt) signal
+
+toInt :: Tick -> GHC.Int.Int32
+toInt x = if x then 1 else 0
 
 writerInfo :: Int -> SoxLib.Rate -> Int -> SoxLib.WriterInfo
 writerInfo numChans sampleRate precision =
@@ -23,7 +30,4 @@ writerInfo numChans sampleRate precision =
 
 writeMono rate filename chunk =
   SoxLib.withWrite (writerInfo 1 rate 16) filename $ \fmt ->
-    SoxLib.writeStorableVector fmt $ list2vector chunk
-
--- list2vector :: Foreign.Storable.Storable a => [a] -> SV.Vector a
-list2vector = SV.pack
+    SoxLib.writeStorableVector fmt $ SV.pack chunk

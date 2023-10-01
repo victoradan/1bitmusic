@@ -1,9 +1,10 @@
 module Music1Bit.Combinators where
 
-import qualified Data.Vector.Unboxed as V
 import Data.Bits
 import Data.MemoTrie
+import qualified Data.Vector.Unboxed as V
 import Music1Bit.Types
+
 -- import Data.List.NonEmpty
 
 -- | Constant 0.
@@ -14,7 +15,10 @@ diff :: (Integer -> Integer) -> (Integer -> Integer)
 diff s t = s t - s (t -1)
 
 train :: V.Vector Tick -> Signal
-train ticks t = ticks V.! (fromInteger t `mod` V.length ticks)
+train ticks t = ticks V.! idx
+  where
+    len = V.length ticks
+    idx = (len + fromInteger t) `mod` len
 
 ioi2signal :: [IOI] -> Signal
 ioi2signal iois = train $ V.fromList $ iois2ticks iois
@@ -29,7 +33,7 @@ ioi2ticks ioi
 
 -- | Impulse-ish
 impulse :: IOI -> Signal
-impulse ioi t = t `mod` ioi == 0
+impulse ioi t = (ioi + t) `mod` ioi == 0
 
 impulseM = memo impulse
 
@@ -51,10 +55,13 @@ seq' :: [(Integer, Signal)] -> Signal
 seq' ss = train $ V.fromList $ concatMap run ss
   where
     run :: (Integer, Signal) -> [Tick]
-    run (d, s) = map s [0..d]
+    run (d, s) = map s [0 .. d]
 
 inverse :: Signal -> Signal
 inverse x t = not $ x t
+
+reverse :: Signal -> Signal
+reverse s t = s (-t)
 
 fib n = fibs !! n
   where

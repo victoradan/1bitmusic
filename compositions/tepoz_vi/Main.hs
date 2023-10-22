@@ -2,11 +2,8 @@
 
 module Main where
 
-import Data.Binary (encode)
-import qualified Data.ByteString.Lazy as BS (ByteString, concat, putStr)
 import Music1Bit.Audio as Audio
 import Music1Bit.Combinators as C
-import Music1Bit.Types as C
 
 -- | polyrhythmic clusters
 post1 = C.ioi2signal [11, 200 .. 12002]
@@ -26,5 +23,4 @@ piece = C.seq' [(postDur, C.reverse post), (bodyDur, C.mix [c1, c2, c3, c4]), (p
 music = map piece [0 .. postDur * 2 + bodyDur]
 
 main :: IO ()
-main = toWav "Tepoz_VI.wav" 44100 music
-
+main = toWav "tepoz_vi.wav" 44100 music

@@ -16,7 +16,7 @@ maintainer:         vctradn@gmail.com
 -- A copyright notice.
 -- copyright:
 -- category:
-extra-source-files: CHANGELOG.md
+-- extra-source-files: CHANGELOG.md
 
 executable tepoz-vi
     main-is:          Main.hs

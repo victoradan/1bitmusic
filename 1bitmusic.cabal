@@ -1,13 +1,13 @@
 name:                1bitmusic
 version:             0.2.0.0
 synopsis:            A library for writing 1-bit music
--- description:
+description:         A library for writing 1-bit music
 homepage:            https://github.com/victoradan/1bitmusic#readme
 license:             BSD3
 license-file:        LICENSE
 author:              Víctor Adán
 maintainer:          vctradn@gmail.com
-copyright:           2017 Víctor Adán
+copyright:           2017 - ∞ Víctor Adán
 category:            Music
 build-type:          Simple
 extra-source-files:  README.md

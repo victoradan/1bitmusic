@@ -15,7 +15,7 @@ phMul = 100
 c1 = C.shift (3000 * phMul) $ C.mix $ map C.impulse [3000 .. 3020]
 c2 = C.shift (5000 * phMul) $ C.mix $ map C.impulse [5000 .. 5050]
 c3 = C.shift (7000 * phMul) $ C.mix $ map C.impulse [7000, 7002 .. 7070]
-c4 = C.shift (20000 * phMul) $ C.mix $ map C.impulse [20000, 20003 .. 20200]
+c4 = C.shift (19000 * phMul) $ C.mix $ map C.impulse [19000, 19003 .. 19200]
 
 postDur = 380000
 bodyDur = 12000000

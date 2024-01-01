@@ -11,7 +11,7 @@ import Music1Bit.Types (Tick)
 import qualified GHC.Int
 
 toWav :: String -> Double -> [Tick] -> IO ()
-toWav name sr signal = writeMono sr name $ map ((* 2 ^ 28) . toInt) signal
+toWav name sr signal = writeMono sr name $ map ((* 2 ^ 30) . toInt) signal
 
 toInt :: Tick -> GHC.Int.Int32
 toInt x = if x then 1 else 0

@@ -36,27 +36,26 @@ resolver: lts-21.25
 # non-dependency (i.e. a user package), and its test suites and benchmarks
 # will not be run. This is useful for tweaking upstream packages.
 packages:
-- '.'
+  - "."
 #- /Users/vadan/code/riff
 #- location:
-    #git: https://bitbucket.org/robertmassaioli/riff.git
-    #commit: 01734c4
+#git: https://bitbucket.org/robertmassaioli/riff.git
+#commit: 01734c4
 
 # Dependency packages to be pulled from upstream that are not in the resolver
 # (e.g., acme-missiles-0.3)
 # extra-deps: []
-extra-deps: 
-- soxlib-0.0.3.2
-- MemoTrie-0.6.11
-  #  - riff-0.3.0.1
-  #  - wavy-0.1.0.0
+extra-deps:
+  - soxlib-0.0.3.2
+  - MemoTrie-0.6.11
+    #  - riff-0.3.0.1
+    #  - wavy-0.1.0.0
 
 # Override default flag values for local packages and extra-deps
 flags: {}
 
 # Extra package databases containing global packages
 extra-package-dbs: []
-
 # Control whether we use the GHC we find on the path
 # system-ghc: true
 #

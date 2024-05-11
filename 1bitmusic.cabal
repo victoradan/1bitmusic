@@ -15,14 +15,8 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Music1Bit.Tick 
-                     , Music1Bit.Comp
-                     , Music1Bit.Phasor
-                     , Music1Bit.Boolean
+  exposed-modules:     Music1Bit.Music
                      , Music1Bit.Audio
-                     , Music1Bit.Compiler
-                     , Music1Bit.Types
-                     , Music1Bit.Combinators
   build-depends:       base >= 4.7 && < 5
                      , storablevector >= 0.2.12
 --                     , riff

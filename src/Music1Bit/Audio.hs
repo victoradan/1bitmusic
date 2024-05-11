@@ -7,13 +7,12 @@ where
 
 import qualified Data.StorableVector as SV
 import qualified Sound.SoxLib as SoxLib
-import Music1Bit.Types (Tick)
 import qualified GHC.Int
 
-toWav :: String -> Double -> [Tick] -> IO ()
+toWav :: String -> Double -> [Bool] -> IO ()
 toWav name sr signal = writeMono sr name $ map ((* 2 ^ 30) . toInt) signal
 
-toInt :: Tick -> GHC.Int.Int32
+toInt :: Bool -> GHC.Int.Int32
 toInt x = if x then 1 else 0
 
 writerInfo :: Int -> SoxLib.Rate -> Int -> SoxLib.WriterInfo

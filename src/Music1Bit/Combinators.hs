@@ -6,7 +6,6 @@ import           Data.Bits
 import qualified Data.Vector     as V
 
 
-
 data Signal = Signal {sample :: Integer -> Tick, dur :: Int}
 
 -- | Constant 0.

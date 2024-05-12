@@ -26,6 +26,7 @@ library
 --                     , algebraic-graphs >= 0.0.4 && < 1
 --                     , wavy
   default-language:    Haskell2010
+  ghc-options:         -W
 
 test-suite 1bitmusic-test
   type:                exitcode-stdio-1.0

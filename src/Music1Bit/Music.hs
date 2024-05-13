@@ -1,4 +1,5 @@
 module Music1Bit.Music where
+import Data.Bits 
 
 type Tick = Bool
 
@@ -50,10 +51,22 @@ ioi2ticks ioi = True : replicate (ioi - 1) False
 collapse :: Music -> [Tick]
 collapse (Prim (Imp ioi)) = ioi2ticks ioi
 collapse (Prim (Phasor iois dur)) = collapsePhasor iois dur -- take dur $ cycle $ concatMap ioi2ticks iois
-collapse (m1 :+: m2) = collapse m1 ++ collapse m2
+collapse (m1 :+: m2) = concat [collapse m1, collapse m2]-- collapse m1 ++ collapse m2
 collapse (m1 :=: m2) =
   let m1' = collapse m1
       m2' = collapse m2
       l = length m1' - length m2'
-      (m1'', m2'') = if l > 0 then (m1', m2' ++ replicate (abs l) False) else (m1' ++ replicate (abs l) False, m2')
+      (m1'', m2'') = if l > 0 then (m1', concat [m2', replicate (abs l) False]) else (concat [m1', replicate (abs l) False], m2')
    in zipWith (/=) m1'' m2''
+
+intToBin :: Integer -> [Bool]
+intToBin 0 = []
+intToBin n = reverse (helper n)
+  where
+    helper 0 = []
+    helper n | even n = False : helper (n `div` 2)
+    helper n  = True : helper (n `div` 2)
+
+-- do integerLog2 instead: https://hackage.haskell.org/package/arithmoi-0.4.2.0/docs/Math-NumberTheory-Logarithms.html
+bitCount :: Integer -> Int
+bitCount = (+1) . floor . logBase 2 . fromInteger

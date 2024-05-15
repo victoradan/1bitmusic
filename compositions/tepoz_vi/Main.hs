@@ -8,26 +8,30 @@ import Music1Bit.Music as M
 
 
 -- | polyrhythmic clusters
+pre1 = M.sequential $ map M.imp $ reverse [11, 200 .. 10001]
+pre2 = M.sequential $ map M.imp $ reverse [10, 200 .. 10007]
+pre3 = M.sequential $ map M.imp $ reverse [9, 200 .. 10011]
+pre = M.parallel [pre1, pre2, pre3]
+
 post1 = M.sequential $ map M.imp [11, 200 .. 12002]
 post2 = M.sequential $ map M.imp [13, 200 .. 12008]
 post3 = M.sequential $ map M.imp [12, 200 .. 12011]
 post = M.parallel [post1, post2, post3]
 
 
+count = 10000000
+
 shiftedPhasor :: Int -> Int -> Music
 shiftedPhasor i n = M.Prim (M.Imp i) :+: M.phasor count [n]
 
-count = 1000000
-c1 = M.parallel $ zipWith shiftedPhasor [30, 400 .. ] [3000 .. 3020]
-c2 = M.parallel $ zipWith shiftedPhasor [50, 650 .. ] [5000 .. 5050]
-c3 = M.parallel $ zipWith shiftedPhasor [70, 870 .. ] [7000, 7002 .. 7070]
-c4 = M.parallel $ zipWith shiftedPhasor [19, 230 .. ] [19000, 19003 .. 19200]
+c1 = M.parallel $ zipWith shiftedPhasor [30, 300 .. ] [3000 .. 3020]
+c2 = M.parallel $ zipWith shiftedPhasor [50, 550 .. ] [5000 .. 5050]
+c3 = M.parallel $ zipWith shiftedPhasor [70, 770 .. ] [7000, 7002 .. 7070]
+c4 = M.parallel $ zipWith shiftedPhasor [19, 1230 .. ] [19000, 19003 .. 19200]
 c = M.parallel [c1, c2, c3, c4]
--- postDur = 380000
--- bodyDur = 12000000
-piece = M.sequential [c,post]--  [(postDur, M.reverse post), (bodyDur, M.mix [c1, c2, c3, c4]), (postDur, post)]
--- music = map piece [0 .. postDur * 2 + bodyDur]
-music = M.collapse c
+
+piece = M.sequential [pre, c, post]
+music = M.collapse piece
 
 main :: IO ()
 -- main = putStr $ show piece

@@ -56,8 +56,6 @@ collapse m = Pipes.toList $ go m
     go (Prim (Phasor iois dur)) = do
       each $ collapsePhasor iois dur
     go (m1 :+: m2) = do
-      -- each $ Pipes.toList $ go m1
-      -- each $ Pipes.toList $ go m2
       for (go m1) yield
       for (go m2) yield
     go (m1 :=: m2) =
@@ -66,18 +64,6 @@ collapse m = Pipes.toList $ go m
           l = max (length m1') (length m2')
           m1'' = cycle m1'
           m2'' = cycle m2'
-       in -- (m1'', m2'') = if l > 0 then (m1', concat [m2', replicate (abs l) False]) else (concat [m1', replicate (abs l) False], m2')
+       in
           do
             each $ take l $ zipWith (/=) m1'' m2''
-
-intToBin :: Integer -> [Bool]
-intToBin 0 = []
-intToBin n = reverse (helper n)
-  where
-    helper 0 = []
-    helper n | even n = False : helper (n `div` 2)
-    helper n = True : helper (n `div` 2)
-
--- do integerLog2 instead: https://hackage.haskell.org/package/arithmoi-0.4.2.0/docs/Math-NumberTheory-Logarithms.html
-bitCount :: Integer -> Int
-bitCount = (+ 1) . floor . logBase 2 . fromInteger

@@ -2,8 +2,8 @@
 
 module Main where
 
-import Music1Bit.Audio as Audio
-import Music1Bit.Music as M
+import           Music1Bit.Audio as Audio
+import           Music1Bit.Music as M
 
 -- import System.Random
 
@@ -44,5 +44,5 @@ piece = M.sequential [pre, c, post]
 music = M.collapse piece
 
 main :: IO ()
--- main = putStr $ show piece
+-- main = putStr $ show music
 main = toWav "test.wav" 44100 music

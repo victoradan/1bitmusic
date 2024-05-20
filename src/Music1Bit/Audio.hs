@@ -5,12 +5,17 @@ module Music1Bit.Audio
   )
 where
 
-import qualified Data.StorableVector as SV
-import qualified Sound.SoxLib as SoxLib
+import           Data.Functor.Identity
+import qualified Data.StorableVector   as SV
 import qualified GHC.Int
+import           Music1Bit.Music       (Tick)
+import           Pipes                 (Producer)
+import qualified Pipes.Prelude         as Pipes
+import qualified Sound.SoxLib          as SoxLib
 
-toWav :: String -> Double -> [Bool] -> IO ()
-toWav name sr signal = writeMono sr name $ map ((* 2 ^ 30) . toInt) signal
+toWav :: String -> Double -> Producer Tick Identity () -> IO ()
+toWav name sr signal = writeMono sr name ((* 2 ^ 30) . toInt <$> Pipes.toList signal)
+
 
 toInt :: Bool -> GHC.Int.Int32
 toInt x = if x then 1 else 0

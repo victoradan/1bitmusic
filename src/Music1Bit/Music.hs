@@ -1,7 +1,9 @@
 module Music1Bit.Music where
 
+import           Control.Monad         (forever)
+import           Data.Functor.Identity
 import           Pipes
-import qualified Pipes.Prelude as Pipes
+import qualified Pipes.Prelude         as Pipes
 
 type Tick = Bool
 type Dur = Int
@@ -41,20 +43,20 @@ foldMusic prim seq par m =
 run :: Int -> [Tick] -> [Tick]
 run n xs = take n (cycle xs)
 
-collapsePhasor :: [IOI] -> Int -> [Tick]
-collapsePhasor iois steps = run steps (iois >>= ioi2ticks)
+collapsePhasor :: [IOI] ->Int -> Producer Tick Identity ()
+collapsePhasor iois steps = forever (each (iois >>= ioi2ticks)) >-> Pipes.take steps
 
 ioi2ticks :: IOI -> [Tick]
 ioi2ticks 0   = [False]
 ioi2ticks ioi = True : replicate (ioi - 1) False
 
-collapse :: Music -> [Tick]
-collapse m = Pipes.toList $ go m
+
+collapse :: Music -> Producer Tick Identity ()
+collapse m = go m
   where
     go (Prim (Imp ioi)) = do
       each (ioi2ticks ioi)
-    go (Prim (Phasor iois dur)) = do
-      each $ collapsePhasor iois dur
+    go (Prim (Phasor iois dur)) = collapsePhasor iois dur
     go (m1 :+: m2) = do
       for (go m1) yield
       for (go m2) yield

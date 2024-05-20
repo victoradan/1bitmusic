@@ -17,6 +17,8 @@ library
   hs-source-dirs:      src
   exposed-modules:     Music1Bit.Music
                      , Music1Bit.Audio
+                     , Music1Bit.Combinators
+                     , Music1Bit.Types
   build-depends:       base >= 4.7 && < 5
                      , storablevector >= 0.2.12
 --                     , riff

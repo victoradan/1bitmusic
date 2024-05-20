@@ -1,11 +1,7 @@
 module Music1Bit.Music where
 import Data.Bits 
 
-type Tick = Bool
-
-type Dur = Int
-
-type IOI = Int
+import Music1Bit.Types
 
 data Primitive = Imp IOI | Phasor [IOI] Dur deriving (Show)
 

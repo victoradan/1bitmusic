@@ -20,7 +20,7 @@ post3 = M.sequential $ map M.imp [12, 200 .. 12011]
 post = M.parallel [post1, post2, post3]
 
 -- count = 12000000
-count = 100000
+count = 1000000
 
 shiftedPhasor :: Int -> Int -> Music
 shiftedPhasor i n = M.Prim (M.Imp i) :+: M.phasor count [n]

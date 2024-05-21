@@ -2,9 +2,8 @@ module Music1Bit.Combinators where
 
 import           Music1Bit.Types
 
-import           Control.Applicative
 import           Data.Bits
-import qualified Data.Vector         as V
+import qualified Data.Vector     as V
 
 
 
@@ -26,9 +25,6 @@ seq2 (Signal xf xd) (Signal yf yd) =
 seq :: [Signal] -> Signal
 seq ss = Signal (\t -> train V.! (fromIntegral t `mod` len)) len
   where
-    run :: Signal -> [Tick]
-    run (Signal f d) = map f [1 .. fromIntegral d]
-    -- run (Signal f d) = map f [0 .. fromIntegral d]
     train = V.fromList $ concatMap run ss
     len = V.length train
 

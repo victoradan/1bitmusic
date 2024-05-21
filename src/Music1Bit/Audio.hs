@@ -6,8 +6,8 @@ module Music1Bit.Audio
 where
 
 import qualified Data.StorableVector as SV
-import qualified Sound.SoxLib as SoxLib
 import qualified GHC.Int
+import qualified Sound.SoxLib        as SoxLib
 
 toWav :: String -> Double -> [Bool] -> IO ()
 toWav name sr signal = writeMono sr name $ map ((* 2 ^ 30) . toInt) signal

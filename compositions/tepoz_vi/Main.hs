@@ -9,18 +9,18 @@ import           Music1Bit.Music       as M
 -- import System.Random
 
 -- | polyrhythmic clusters
-pre1 = M.sequential $ map M.imp $ reverse [11, 200 .. 10001]
-pre2 = M.sequential $ map M.imp $ reverse [10, 200 .. 10007]
-pre3 = M.sequential $ map M.imp $ reverse [9, 200 .. 10011]
+pre1 = M.sequential $ map M.imp $ reverse [20, 200 .. 10001]
+pre2 = M.sequential $ map M.imp $ reverse [20, 200 .. 10007]
+pre3 = M.sequential $ map M.imp $ reverse [19, 200 .. 10012]
 pre = M.parallel [pre1, pre2, pre3]
 
-post1 = M.sequential $ map M.imp [11, 200 .. 12002]
+post1 = M.sequential $ map M.imp [13, 200 .. 12002]
 post2 = M.sequential $ map M.imp [13, 200 .. 12008]
-post3 = M.sequential $ map M.imp [12, 200 .. 12011]
+post3 = M.sequential $ map M.imp [12, 200 .. 12021]
 post = M.parallel [post1, post2, post3]
 
 -- count = 12000000
-count = 1000000
+count = 100000
 
 shiftedPhasor :: Int -> Int -> Music
 shiftedPhasor i n = M.Prim (M.Imp i) :+: M.phasor count [n]

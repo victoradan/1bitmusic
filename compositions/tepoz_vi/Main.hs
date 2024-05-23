@@ -2,25 +2,40 @@
 
 module Main where
 
-import Music1Bit.Audio as Audio
-import Music1Bit.Combinators as C
+import           Music1Bit.Audio       as Audio
+import           Music1Bit.Combinators as C
+import           Music1Bit.Music       as M
+
+-- import System.Random
 
 -- | polyrhythmic clusters
-post1 = C.ioi2signal [11, 200 .. 12002]
-post2 = C.ioi2signal [13, 200 .. 12008]
-post3 = C.ioi2signal [12, 200 .. 12011]
-post = C.mix [post1, post2, post3]
+pre1 = M.sequential $ map M.imp $ reverse [20, 200 .. 10001]
+pre2 = M.sequential $ map M.imp $ reverse [20, 200 .. 10007]
+pre3 = M.sequential $ map M.imp $ reverse [19, 200 .. 10012]
+pre = M.parallel [pre1, pre2, pre3]
 
-phMul = 100
-c1 = C.shift (3000 * phMul) $ C.mix $ map C.impulse [3000 .. 3020]
-c2 = C.shift (5000 * phMul) $ C.mix $ map C.impulse [5000 .. 5050]
-c3 = C.shift (7000 * phMul) $ C.mix $ map C.impulse [7000, 7002 .. 7070]
-c4 = C.shift (19000 * phMul) $ C.mix $ map C.impulse [19000, 19003 .. 19200]
+post1 = M.sequential $ map M.imp [13, 200 .. 12002]
+post2 = M.sequential $ map M.imp [13, 200 .. 12008]
+post3 = M.sequential $ map M.imp [12, 200 .. 12021]
+post = M.parallel [post1, post2, post3]
 
-postDur = 380000
-bodyDur = 12000000
-piece = C.seq' [(postDur, C.reverse post), (bodyDur, C.mix [c1, c2, c3, c4]), (postDur, post)]
-music = map piece [0 .. postDur * 2 + bodyDur]
+-- count = 12000000
+count = 100000
+
+shiftedPhasor :: Int -> Int -> Music
+shiftedPhasor i n = M.Prim (M.Imp i) :+: M.phasor count [n]
+
+c1 = M.parallel $ zipWith shiftedPhasor [30, 300 ..] [3000 .. 3020]
+c2 = M.parallel $ zipWith shiftedPhasor [50, 550 ..] [5000 .. 5050]
+c3 = M.parallel $ zipWith shiftedPhasor [70, 770 ..] [7000, 7002 .. 7070]
+c4 = M.parallel $ zipWith shiftedPhasor [19, 1230 ..] [19000, 19003 .. 19200]
+c = M.parallel [c1, c2, c3, c4]
+
+piece = M.sequential [pre, c, post]
+
+signal = M.collapse piece
+music = map (C.sample signal) [0 .. fromIntegral (C.dur signal)]
 
 main :: IO ()
-main = toWav "tepoz_vi.wav" 44100 music
+-- main = putStr $ show (pre)
+main = toWav "test.wav" 44100 music

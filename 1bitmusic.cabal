@@ -15,14 +15,10 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Music1Bit.Tick 
-                     , Music1Bit.Comp
-                     , Music1Bit.Phasor
-                     , Music1Bit.Boolean
+  exposed-modules:     Music1Bit.Music
                      , Music1Bit.Audio
-                     , Music1Bit.Compiler
-                     , Music1Bit.Types
                      , Music1Bit.Combinators
+                     , Music1Bit.Types
   build-depends:       base >= 4.7 && < 5
                      , storablevector >= 0.2.12
 --                     , riff
@@ -32,6 +28,7 @@ library
 --                     , algebraic-graphs >= 0.0.4 && < 1
 --                     , wavy
   default-language:    Haskell2010
+  ghc-options:         -W
 
 test-suite 1bitmusic-test
   type:                exitcode-stdio-1.0

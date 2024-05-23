@@ -15,9 +15,13 @@ cabal.sandbox.config
 *.aux
 *.hp
 *.eventlog
+*.eventlog.html
 .stack-work/
 cabal.project.local
 .HTF/
 
 *.wav
 *.flac
+*.pdf
+*.ps
+

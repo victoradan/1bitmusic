@@ -3,8 +3,8 @@
 module LSystem where
 
 
-import Data.List
-import System.Random
+import           Data.List
+import           System.Random
 
 data Rule a = Rule {lhs :: a, rhs :: a} deriving (Eq, Ord, Show)
 
@@ -81,7 +81,7 @@ replFun rules (s, rands) =
 getNewRHS :: (Eq a) => [[(Rule a, Prob)]] -> a -> Rand -> a
 getNewRHS rrs ls rand =
   let loop ((r, p) : rs) = if rand <= p then rhs r else loop rs
-      loop [] = error "getNewRHS anomaly"
+      loop []            = error "getNewRHS anomaly"
    in case find (\((r, p) : _) -> lhs r == ls) rrs of
         Just rs -> loop rs
         Nothing -> error "No rule match"

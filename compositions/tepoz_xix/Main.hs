@@ -17,26 +17,35 @@ interpret (N x) r m = case lookup x r of
   Nothing -> error $ "No interpretation rule for " ++ show x
 
 
-data LFun = Harm | Same deriving (Eq, Ord, Show)
+data LFun = Harm | Seq | Same deriving (Eq, Ord, Show)
 
 ir :: IR LFun
-ir = [(Harm, \m -> m M.:+: M.phasor 1000 [10, 10, 2, 12]), (Same, id) ]
+ir = [(Harm, \m -> m M.:=: M.phasor (M.dur m) [100, 200]), (Same, id) ]
 
 sc = N Harm
 same = N Same
+seq = sc :+ same
 
 
 r1a = Rule sc same
 r1b = Rule same sc
+r1c = Rule sc Main.seq
+r1d = Rule Main.seq same
 
 
-g1 = Grammar same (Uni [r1a, r1b ])
+g1 = Grammar sc (Uni [r1a, r1b, r1c, r1d ])
 
-t1 n = interpret (L.gen L.replFun g1 6 !! n) ir (M.phasor 1000 [132,321])
+t1 n = interpret (L.gen L.replFun g1 2 !! n) ir (M.phasor 1000 [100, 200 .. 1000])
 
 
-music = M.collapse (t1 115)
-signal = C.run music
+music = t1 33
+signal = M.collapse music
 
 main :: IO ()
-main = toWav "tepoz_xix.wav" 44100 signal
+-- main = print music
+main = toWav "tepoz_xix.wav" 44100 $ C.run signal
+
+-- main :: IO ()
+-- main = do
+--   print music
+--   toWav "tepoz_xix.wav" 44100 $ C.run signal

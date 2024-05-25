@@ -1,6 +1,6 @@
 module Music1Bit.Music where
 
-import           Music1Bit.Combinators as C
+import qualified Music1Bit.Combinators as C
 import           Music1Bit.Types
 
 data Primitive = Imp IOI | Phasor [IOI] Dur deriving (Show)
@@ -28,6 +28,7 @@ parallel []       = error "parallel must not be empty"
 parallel [i]      = i
 parallel (i : is) = i :=: parallel is
 
+foldMusic :: (Primitive -> t) -> (t -> t -> t) -> (t -> t -> t) -> Music -> t
 foldMusic prim seq par m =
   case m of
     Prim p    -> prim p
@@ -36,7 +37,16 @@ foldMusic prim seq par m =
   where
     rec = foldMusic prim seq par
 
-collapse :: Music -> Signal
+dur :: Music -> Int
+dur = foldMusic prim seq par
+  where
+    prim (Imp ioi)      = ioi
+    prim (Phasor _ dur) = dur
+    seq d1 d2 = d1 + d2
+    par = max
+
+
+collapse :: Music -> C.Signal
 collapse (Prim (Imp ioi))         = C.cycle ioi ioi
 collapse (Prim (Phasor iois dur)) = C.newdur dur $ C.seq (map (\ioi -> C.cycle ioi ioi) iois )
 collapse (m1 :+: m2)              =  C.seq2 (collapse m1) (collapse m2)

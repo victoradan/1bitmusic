@@ -45,6 +45,11 @@ dur = foldMusic prim seq par
     seq d1 d2 = d1 + d2
     par = max
 
+mul :: Float -> Music -> Music
+mul s = foldMusic prim (:+:) (:=:)
+  where
+    prim (Imp ioi)         = Prim $ Imp $ ceiling (s * fromIntegral ioi)
+    prim (Phasor iois dur) = Prim $ Phasor (map (ceiling . (*s) . fromIntegral) iois) dur
 
 collapse :: Music -> C.Signal
 collapse (Prim (Imp ioi))         = C.cycle ioi ioi

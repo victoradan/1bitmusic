@@ -51,6 +51,12 @@ mul s = foldMusic prim (:+:) (:=:)
     prim (Imp ioi)         = Prim $ Imp $ ceiling (s * fromIntegral ioi)
     prim (Phasor iois dur) = Prim $ Phasor (map (ceiling . (*s) . fromIntegral) iois) dur
 
+scale :: Float -> Music -> Music
+scale s = foldMusic prim (:+:) ( :=:)
+  where
+    prim (Imp ioi)  = Prim $ Phasor [ioi] (ceiling $ fromIntegral ioi * s)
+    prim (Phasor iois dur) = Prim $ Phasor iois (ceiling $ fromIntegral dur * s)
+
 collapse :: Music -> C.Signal
 collapse (Prim (Imp ioi))         = C.cycle ioi ioi
 collapse (Prim (Phasor iois dur)) = C.newdur dur $ C.seq (map (\ioi -> C.cycle ioi ioi) iois )

@@ -21,7 +21,6 @@ data LFun = Scale | Harm | Same | Up | Down deriving (Eq, Ord, Show)
 
 -- TODO
 -- Add more M.muls with diff values
--- Add dur scaling.
 
 ir :: IR LFun
 ir = [(Scale, M.scale 1.5), (Harm, \m -> m M.:=: M.phasor (M.dur m) [502, 401]), (Same, id), (Up, M.mul 2), (Down, M.mul 0.5) ]
@@ -56,7 +55,6 @@ music = t1 17
 signal = M.collapse music
 
 main :: IO ()
--- main = print music
 main = toWav "tepoz_xix.wav" 44100 $ C.run signal
 
 -- main :: IO ()

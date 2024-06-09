@@ -23,7 +23,12 @@ data LFun = Scale | Harm | Same | Up | Down deriving (Eq, Ord, Show)
 -- Add more M.muls with diff values
 
 ir :: IR LFun
-ir = [(Scale, M.scale 1.5), (Harm, \m -> m M.:=: M.phasor (M.dur m) [502, 401]), (Same, id), (Up, M.mul 2), (Down, M.mul 0.5) ]
+ir = [
+  (Scale, M.scale 1.5),
+  (Harm, \m -> m M.:=: M.phasor (M.dur m) [502, 401]),
+  (Same, id),
+  (Up, M.mul 2),
+  (Down, M.mul 0.5)]
 
 sc = N Scale
 harm = N Harm
@@ -50,14 +55,10 @@ g1 = Grammar down (Uni [r1a, r1b, r1c, r1d, r1e, r1f, r1g, r1h, r1i, r1j, r1k ])
 
 t1 n = interpret (L.gen L.replFun g1 3 !! n) ir (M.phasor 400 [300, 400])
 
+pre = M.sequential $ map M.imp $ reverse [20, 200 .. 13001]
+post = M.sequential $ map M.imp [13, 100 .. 9002]
 
-music = t1 17
-signal = M.collapse music
+music = M.sequential [pre, t1 17, post]
 
 main :: IO ()
-main = toWav "tepoz_xix.wav" 44100 $ C.run signal
-
--- main :: IO ()
--- main = do
---   print music
---   toWav "tepoz_xix.wav" 44100 $ C.run signal
+main = toWav "tepoz_xix.wav" 44100 $ C.run $ M.collapse music

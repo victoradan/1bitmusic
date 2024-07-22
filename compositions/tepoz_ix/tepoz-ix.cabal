@@ -1,5 +1,5 @@
 cabal-version:      3.0
-name:               tepoz-xix
+name:               tepoz-ix
 version:            0.1.0.0
 synopsis:
 
@@ -18,7 +18,7 @@ maintainer:         vctradn@gmail.com
 -- category:
 -- extra-source-files: CHANGELOG.md
 
-executable tepoz-xix
+executable tepoz-ix
     main-is:          Main.hs
 
     -- Modules included in this executable, other than Main.

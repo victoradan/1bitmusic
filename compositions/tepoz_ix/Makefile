@@ -1,5 +1,5 @@
 
-NUM=xix
+NUM=ix
 
 compile:
 	cabal v2-build

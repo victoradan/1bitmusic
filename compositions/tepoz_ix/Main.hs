@@ -61,4 +61,4 @@ post = M.sequential $ map M.imp [13, 100 .. 9002]
 music = M.sequential [pre, t1 17, post]
 
 main :: IO ()
-main = toWav "tepoz_xix.wav" 44100 $ C.run $ M.collapse music
+main = toWav "tepoz_ix.wav" 44100 $ C.run $ M.collapse music

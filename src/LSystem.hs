@@ -2,6 +2,7 @@
 
 module LSystem where
 
+-- From the Haskell school of music book.
 
 import           Data.List
 import           System.Random

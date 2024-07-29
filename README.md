@@ -4,15 +4,9 @@
 
 This is a Haskell library to compose 1-bit music. It is based on my doctoral thesis on [Discrete Time 1-bit Music].
 
-This code is work-in-progress.
-
-
-## Sample Compositions
-TODO
 ## Build
 - With cabal: `cabal build`
 - With nix: `nix-build release.nix`
-
 
 ### Dependencies
 - soxlib

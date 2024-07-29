@@ -19,9 +19,6 @@ interpret (N x) r m = case lookup x r of
 
 data LFun = Scale | Harm | Same | Up | Down deriving (Eq, Ord, Show)
 
--- TODO
--- Add more M.muls with diff values
-
 ir :: IR LFun
 ir = [
   (Scale, M.scale 1.5),

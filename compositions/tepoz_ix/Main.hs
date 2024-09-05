@@ -21,7 +21,7 @@ data LFun = Scale | Harm | Same | Up | Down deriving (Eq, Ord, Show)
 
 ir :: IR LFun
 ir = [
-  (Scale, M.scale 1.5),
+  (Scale, M.scaleDur 1.5),
   (Harm, \m -> m M.:=: M.phasor (M.dur m) [502, 401]),
   (Same, id),
   (Up, M.mul 2),

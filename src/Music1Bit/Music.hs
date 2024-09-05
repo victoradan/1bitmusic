@@ -3,62 +3,65 @@ module Music1Bit.Music where
 import qualified Music1Bit.Combinators as C
 import           Music1Bit.Types
 
-data Primitive = Imp IOI | Phasor [IOI] Dur deriving (Show)
+-- TODO get rid of Rest? an Imp with a=`0` is a rest
+data Primitive a = Phasor [(IOI, a)] deriving (Show)
 
-data Music
-  = Prim Primitive
-  | Music :+: Music -- sequential
-  | Music :=: Music -- parallel
+-- TODO? put Dur at Music level?
+data Music a
+  = Prim Dur (Primitive a)
+  | (Music a) :+: (Music a) -- sequential
+  | (Music a) :=: (Music a)  -- or
+  | (Music a) :#: (Music a) -- xor
   deriving (Show)
 
-imp :: IOI -> Music
-imp i = Prim (Imp i)
+phasor :: Dur -> [IOI] -> [a] -> Music a
+phasor d iois as = Prim d (Phasor $ zip iois as)
 
-phasor :: Int -> [IOI] -> Music
-phasor n iois = Prim $ Phasor iois n
-
-sequential :: [Music] -> Music
+sequential :: [Music a] -> Music a
 sequential []       = error "sequence must not be empty" -- Prim (Imp 0)
 sequential [i]      = i
 sequential (i : is) = i :+: sequential is
 
-parallel :: [Music] -> Music
--- parallel []       = Prim (Imp 0)
-parallel []       = error "parallel must not be empty"
-parallel [i]      = i
-parallel (i : is) = i :=: parallel is
+xor :: [Music a] -> Music a
+xor []       = error "xor must not be empty"
+xor [i]      = i
+xor (i : is) = i :#: xor is
 
-foldMusic :: (Primitive -> t) -> (t -> t -> t) -> (t -> t -> t) -> Music -> t
-foldMusic prim seq par m =
+foldMusic :: (Dur -> Primitive a -> t) -> (t -> t -> t) -> (t -> t -> t) -> (t -> t -> t) -> Music a -> t
+foldMusic prim seq or xor m =
   case m of
-    Prim p    -> prim p
+    Prim d p  -> prim d p
     m1 :+: m2 -> seq (rec m1) (rec m2)
-    m1 :=: m2 -> par (rec m1) (rec m2)
+    m1 :=: m2 -> xor (rec m1) (rec m2)
+    m1 :#: m2 -> or (rec m1) (rec m2)
   where
-    rec = foldMusic prim seq par
+    rec = foldMusic prim seq or xor
 
-dur :: Music -> Int
-dur = foldMusic prim seq par
+-- | Get Music duration
+dur :: Music a -> Int
+dur = foldMusic prim seq xor or
   where
-    prim (Imp ioi)      = ioi
-    prim (Phasor _ dur) = dur
+    prim dur _ = dur
     seq d1 d2 = d1 + d2
-    par = max
+    or = max
+    xor = max
 
-mul :: Float -> Music -> Music
-mul s = foldMusic prim (:+:) (:=:)
+-- mul :: Float -> Music a -> Music a
+-- mul s = foldMusic prim Seq Xor Or
+--   where
+--     prim (Imp a ioi)         = Prim $ Imp a $ ceiling (s * fromIntegral ioi)
+--     prim (Phasor a iois dur) = Prim $ Phasor a (map (ceiling . (*s) . fromIntegral) iois) dur
+
+-- | Change Music duration by a scalar factor
+scaleDur :: Float -> Music a -> Music a
+scaleDur s = foldMusic prim (:+:) (:=:) (:#:)
   where
-    prim (Imp ioi)         = Prim $ Imp $ ceiling (s * fromIntegral ioi)
-    prim (Phasor iois dur) = Prim $ Phasor (map (ceiling . (*s) . fromIntegral) iois) dur
+    prim dur (Phasor items) = Prim (ceiling $ fromIntegral dur * s) $ Phasor items
 
-scale :: Float -> Music -> Music
-scale s = foldMusic prim (:+:) ( :=:)
+collapse :: C.AudioSample a => Music a -> C.Signal a
+collapse (Prim dur (Phasor imps)) = C.cycle iois as dur
   where
-    prim (Imp ioi)  = Prim $ Phasor [ioi] (ceiling $ fromIntegral ioi * s)
-    prim (Phasor iois dur) = Prim $ Phasor iois (ceiling $ fromIntegral dur * s)
-
-collapse :: Music -> C.Signal
-collapse (Prim (Imp ioi))         = C.cycle ioi ioi
-collapse (Prim (Phasor iois dur)) = C.newdur dur $ C.seq (map (\ioi -> C.cycle ioi ioi) iois )
-collapse (m1 :+: m2)              =  C.seq2 (collapse m1) (collapse m2)
+    (iois, as) = unzip imps
+collapse ( m1 :+: m2  )           =  C.seq2 (collapse m1) (collapse m2)
+collapse (m1 :#: m2 )             = C.mix2 (collapse m1) (collapse m2)
 collapse (m1 :=: m2)              = C.mix2 (collapse m1) (collapse m2)

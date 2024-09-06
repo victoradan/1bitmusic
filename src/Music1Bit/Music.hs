@@ -3,13 +3,20 @@ module Music1Bit.Music where
 import qualified Music1Bit.Combinators as C
 import           Music1Bit.Types
 
-data Phasor a = Phasor {iois ::[IOI], imps:: [a]}
+data Phasor a = Phasor {iois ::[IOI], imps:: [a]} deriving (Show)
+
+instance Functor Phasor where
+  fmap f (Phasor iois imps) = Phasor iois (map f imps)
+
+instance Applicative Phasor where
+  pure x = Phasor [] [x]
+  (Phasor _ impsX) <*> (Phasor ioisY impsY) = Phasor ioisY [f y | f <- impsX, y <- impsY]
 
 data Music a
   = Prim Dur (Phasor a)
   | (Music a) :+: (Music a) -- sequential
   | (Music a) :=: (Music a)  -- or
-  | (Music a) :#: (Music a) -- xor
+  | (Music a) :#: (Music a) deriving (Show) -- xor
 
 train :: [IOI] -> [a] -> Music a
 train iois imps = Prim (sum iois) (Phasor iois imps)

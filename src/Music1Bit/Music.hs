@@ -3,17 +3,16 @@ module Music1Bit.Music where
 import qualified Music1Bit.Combinators as C
 import           Music1Bit.Types
 
-newtype Primitive a = Phasor [(IOI, a)] deriving (Show)
+data Phasor a = Phasor {phase :: Integer -> Integer, iois ::[IOI], imps:: [a]}
 
 data Music a
-  = Prim Dur (Primitive a)
+  = Prim Dur (Phasor a)
   | (Music a) :+: (Music a) -- sequential
   | (Music a) :=: (Music a)  -- or
   | (Music a) :#: (Music a) -- xor
-  deriving (Show)
 
-phasor :: Dur -> [IOI] -> [a] -> Music a
-phasor d iois as = Prim d (Phasor $ zip iois as)
+phasor :: (Integer -> Integer) -> Dur -> [IOI] -> [a] -> Music a
+phasor ph d iois as = Prim d (Phasor {phase = ph, iois=iois, imps=as})
 
 sequential :: [Music a] -> Music a
 sequential []       = error "sequence must not be empty" -- Prim (Imp 0)
@@ -25,7 +24,7 @@ xor []       = error "xor must not be empty"
 xor [i]      = i
 xor (i : is) = i :#: xor is
 
-foldMusic :: (Dur -> Primitive a -> t) -> (t -> t -> t) -> (t -> t -> t) -> (t -> t -> t) -> Music a -> t
+foldMusic :: (Dur -> Phasor a -> t) -> (t -> t -> t) -> (t -> t -> t) -> (t -> t -> t) -> Music a -> t
 foldMusic prim seq or xor m =
   case m of
     Prim d p  -> prim d p
@@ -54,12 +53,11 @@ dur = foldMusic prim seq xor or
 scaleDur :: Float -> Music a -> Music a
 scaleDur s = foldMusic prim (:+:) (:=:) (:#:)
   where
-    prim dur (Phasor items) = Prim (ceiling $ fromIntegral dur * s) $ Phasor items
+    prim dur = Prim (ceiling $ fromIntegral dur * s)
+
 
 collapse :: C.AudioSample a => Music a -> C.Signal a
-collapse (Prim dur (Phasor imps)) = C.cycle iois as dur
-  where
-    (iois, as) = unzip imps
-collapse (m1 :+: m2) = C.seq2 (collapse m1) (collapse m2)
-collapse (m1 :#: m2) = C.mix2 (collapse m1) (collapse m2)
-collapse (m1 :=: m2) = C.mix2 (collapse m1) (collapse m2)
+collapse (Prim dur ph) = C.phasor dur (iois ph) (imps ph)
+collapse (m1 :+: m2)   = C.seq2 (collapse m1) (collapse m2)
+collapse (m1 :#: m2)   = C.mix2 (collapse m1) (collapse m2)
+collapse (m1 :=: m2)   = C.mix2 (collapse m1) (collapse m2)

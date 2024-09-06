@@ -5,22 +5,46 @@ module Music1Bit.Combinators where
 
 -- import           Data.Bits
 import qualified Data.Vector     as V
+-- import Data.Map.Strict as Map
+import           Data.List       as L
 
 import           Music1Bit.Types
 
 type Stereo a = (a, a)
+type Mono a = a
 
 class AudioSample a where
     xor :: a -> a -> a
     or :: a -> a -> a
     zero :: a
 
+instance AudioSample (Mono Bool) where
+    xor x a = x /= a
+    or x a= x || a
+    zero = False
 instance AudioSample (Stereo Bool) where
     xor (x, y) (a, b)= (x /= a, y /= b)
     or (x, y) (a, b)= (x || a, y || b)
     zero = (False, False)
 
 data Signal a = Signal {sample :: Integer -> a, dur :: Int}
+
+-- phasor :: AudioSample a => (Integer -> Integer) -> Dur -> [IOI] -> [a] -> Signal a
+phasor :: AudioSample a => Dur -> [IOI] -> [a] -> Signal a
+phasor dur iois as = Signal f dur
+    where
+        cycleDur = sum iois
+        cycleLen = length iois * length as
+        integral = init (0 : scanl1 (+) iois)
+        integral' = take cycleLen $ Prelude.cycle integral
+        as' = take cycleLen $ Prelude.cycle as
+        f t =
+            case idx of
+                Nothing -> zero
+                Just n  -> as' !! n
+            where
+                t' = fromIntegral  t `mod` cycleDur
+                idx = L.elemIndex t' integral'
 
 ioi2impulses :: AudioSample a => (IOI, a) -> [a]
 ioi2impulses (ioi, a)

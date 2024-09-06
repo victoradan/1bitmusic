@@ -3,10 +3,8 @@ module Music1Bit.Music where
 import qualified Music1Bit.Combinators as C
 import           Music1Bit.Types
 
--- TODO get rid of Rest? an Imp with a=`0` is a rest
-data Primitive a = Phasor [(IOI, a)] deriving (Show)
+newtype Primitive a = Phasor [(IOI, a)] deriving (Show)
 
--- TODO? put Dur at Music level?
 data Music a
   = Prim Dur (Primitive a)
   | (Music a) :+: (Music a) -- sequential
@@ -62,6 +60,6 @@ collapse :: C.AudioSample a => Music a -> C.Signal a
 collapse (Prim dur (Phasor imps)) = C.cycle iois as dur
   where
     (iois, as) = unzip imps
-collapse ( m1 :+: m2  )           =  C.seq2 (collapse m1) (collapse m2)
-collapse (m1 :#: m2 )             = C.mix2 (collapse m1) (collapse m2)
-collapse (m1 :=: m2)              = C.mix2 (collapse m1) (collapse m2)
+collapse (m1 :+: m2) = C.seq2 (collapse m1) (collapse m2)
+collapse (m1 :#: m2) = C.mix2 (collapse m1) (collapse m2)
+collapse (m1 :=: m2) = C.mix2 (collapse m1) (collapse m2)

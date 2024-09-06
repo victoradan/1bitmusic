@@ -1,3 +1,5 @@
+{-# LANGUAGE FlexibleInstances #-}
+
 module Music1Bit.Combinators where
 
 
@@ -6,12 +8,14 @@ import qualified Data.Vector     as V
 
 import           Music1Bit.Types
 
+type Stereo a = (a, a)
+
 class AudioSample a where
     xor :: a -> a -> a
     or :: a -> a -> a
     zero :: a
 
-instance AudioSample (Bool ,Bool ) where
+instance AudioSample (Stereo Bool) where
     xor (x, y) (a, b)= (x /= a, y /= b)
     or (x, y) (a, b)= (x || a, y || b)
     zero = (False, False)

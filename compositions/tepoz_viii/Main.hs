@@ -10,7 +10,7 @@ import           Music1Bit.Music       as M
 
 -- | polyrhythmic clusters
 -- pre1 =  M.phasor (\t -> t) 400000 (reverse [20, 200 .. 10001]) [True]
-pre1 =  M.phasor (\t -> t) 400000 ([10000, 23000, 45000 ]) [True]
+pre1 =  M.phasor 400000 [10000, 20000, 30000 ] [True]
 -- pre2 = M.sequential $ map M.imp $ reverse [20, 200 .. 10007]
 -- pre3 = M.sequential $ map M.imp $ reverse [19, 200 .. 10012]
 -- pre = M.parallel [pre1, pre2, pre3]

@@ -29,7 +29,6 @@ instance AudioSample (Stereo Bool) where
 
 data Signal a = Signal {sample :: Integer -> a, dur :: Int}
 
--- phasor :: AudioSample a => (Integer -> Integer) -> Dur -> [IOI] -> [a] -> Signal a
 phasor :: AudioSample a => Dur -> [IOI] -> [a] -> Signal a
 phasor dur iois as = Signal f dur
     where
@@ -43,25 +42,13 @@ phasor dur iois as = Signal f dur
                 Nothing -> zero
                 Just n  -> as' !! n
             where
-                t' = fromIntegral  t `mod` cycleDur
+                t' = fromIntegral t `mod` cycleDur
                 idx = L.elemIndex t' integral'
-
-ioi2impulses :: AudioSample a => (IOI, a) -> [a]
-ioi2impulses (ioi, a)
-    | ioi == 0 = []
-    | otherwise =  a:replicate (abs ioi - 1) zero
 
 -- | Constant signal.
 constant :: a -> Dur -> Signal a
 constant x = Signal (const x)
 
--- | Tick cycle. sampleImpulses
-cycle :: AudioSample a => [IOI] -> [a] -> Dur -> Signal a
-cycle iois as =
-    Signal (\t -> imps !! fromIntegral t)
-    -- Signal (\t -> (t `mod` (length imps)) !! imps)
-    where
-        imps = concatMap ioi2impulses $ zip iois as
 
 seq2 :: Signal a -> Signal a -> Signal a
 seq2 (Signal xf xd) (Signal yf yd) =

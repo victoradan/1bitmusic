@@ -3,7 +3,7 @@ module Music1Bit.Music where
 import qualified Music1Bit.Combinators as C
 import           Music1Bit.Types
 
-data Phasor a = Phasor {phase :: Integer -> Integer, iois ::[IOI], imps:: [a]}
+data Phasor a = Phasor {iois ::[IOI], imps:: [a]}
 
 data Music a
   = Prim Dur (Phasor a)
@@ -11,8 +11,8 @@ data Music a
   | (Music a) :=: (Music a)  -- or
   | (Music a) :#: (Music a) -- xor
 
-phasor :: (Integer -> Integer) -> Dur -> [IOI] -> [a] -> Music a
-phasor ph d iois as = Prim d (Phasor {phase = ph, iois=iois, imps=as})
+phasor :: Dur -> [IOI] -> [a] -> Music a
+phasor d iois as = Prim d (Phasor {iois=iois, imps=as})
 
 sequential :: [Music a] -> Music a
 sequential []       = error "sequence must not be empty" -- Prim (Imp 0)
@@ -57,7 +57,7 @@ scaleDur s = foldMusic prim (:+:) (:=:) (:#:)
 
 
 collapse :: C.AudioSample a => Music a -> C.Signal a
-collapse (Prim dur ph) = C.phasor dur (iois ph) (imps ph)
+collapse (Prim dur ph) = C.phasor dur  (iois ph) (imps ph)
 collapse (m1 :+: m2)   = C.seq2 (collapse m1) (collapse m2)
 collapse (m1 :#: m2)   = C.mix2 (collapse m1) (collapse m2)
 collapse (m1 :=: m2)   = C.mix2 (collapse m1) (collapse m2)

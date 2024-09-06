@@ -6,7 +6,6 @@ import           Music1Bit.Audio       as Audio
 import           Music1Bit.Combinators as C
 import           Music1Bit.Music       as M
 
--- import System.Random
 
 -- | polyrhythmic clusters
 pre1 =  M.train (reverse [20, 200 .. 10001]) [True]
@@ -20,7 +19,7 @@ post3 = M.train [12, 200 .. 12021] [True]
 post = M.ormix [post1, post2, post3]
 
 count = 12000000
--- count = 1000000
+-- count = 100000
 
 shiftedPhasor :: Int -> Int -> Music Bool
 shiftedPhasor i n = M.train [i] [True] :+: M.phasor count [n] [True]
@@ -33,10 +32,7 @@ c = M.xormix [c1, c2, c3, c4]
 
 piece = M.sequential [pre, c, post]
 
-signal = M.collapse piece
--- signal = M.collapse pre
-music = map (C.sample signal) [0 .. fromIntegral (C.dur signal)]
+music = C.run $ M.collapse piece
 
 main :: IO ()
--- main = putStr $ show (concatMap C.ioi2impulses [(10, True), (3, True)])
 main = toWav "test.wav" 44100 music

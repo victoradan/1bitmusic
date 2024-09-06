@@ -14,17 +14,17 @@ type Stereo a = (a, a)
 type Mono a = a
 
 class AudioSample a where
-    xor :: a -> a -> a
-    or :: a -> a -> a
+    xormix :: a -> a -> a
+    ormix :: a -> a -> a
     zero :: a
 
 instance AudioSample (Mono Bool) where
-    xor x a = x /= a
-    or x a= x || a
+    xormix x a = x /= a
+    ormix x a= x || a
     zero = False
 instance AudioSample (Stereo Bool) where
-    xor (x, y) (a, b)= (x /= a, y /= b)
-    or (x, y) (a, b)= (x || a, y || b)
+    xormix (x, y) (a, b)= (x /= a, y /= b)
+    ormix (x, y) (a, b)= (x || a, y || b)
     zero = (False, False)
 
 data Signal a = Signal {sample :: Integer -> a, dur :: Int}
@@ -64,8 +64,11 @@ newdur :: Dur -> Signal a -> Signal a
 newdur d (Signal f _) = Signal f d
 
 -- | xor two signals together.
-mix2 :: AudioSample a => Signal a -> Signal a -> Signal a
-mix2 (Signal xf xd) (Signal yf yd) = Signal (\t -> xf t `xor` yf t) (max xd yd)
+xormix2 :: AudioSample a => Signal a -> Signal a -> Signal a
+xormix2 (Signal xf xd) (Signal yf yd) = Signal (\t -> xf t `xormix` yf t) (max xd yd)
+
+ormix2 :: AudioSample a => Signal a -> Signal a -> Signal a
+ormix2 (Signal xf xd) (Signal yf yd) = Signal (\t -> xf t `ormix` yf t) (max xd yd)
 
 -- -- | Mix many signals together.
 -- mix :: [Signal] -> Signal

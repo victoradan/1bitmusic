@@ -11,6 +11,9 @@ data Music a
   | (Music a) :=: (Music a)  -- or
   | (Music a) :#: (Music a) -- xor
 
+train :: [IOI] -> [a] -> Music a
+train iois imps = Prim (sum iois) (Phasor iois imps)
+
 phasor :: Dur -> [IOI] -> [a] -> Music a
 phasor d iois as = Prim d (Phasor {iois=iois, imps=as})
 
@@ -19,10 +22,15 @@ sequential []       = error "sequence must not be empty" -- Prim (Imp 0)
 sequential [i]      = i
 sequential (i : is) = i :+: sequential is
 
-xor :: [Music a] -> Music a
-xor []       = error "xor must not be empty"
-xor [i]      = i
-xor (i : is) = i :#: xor is
+xormix :: [Music a] -> Music a
+xormix []       = error "xor must not be empty"
+xormix [i]      = i
+xormix (i : is) = i :#: xormix is
+
+ormix :: [Music a] -> Music a
+ormix []       = error "xor must not be empty"
+ormix [i]      = i
+ormix (i : is) = i :=: ormix is
 
 foldMusic :: (Dur -> Phasor a -> t) -> (t -> t -> t) -> (t -> t -> t) -> (t -> t -> t) -> Music a -> t
 foldMusic prim seq or xor m =
@@ -43,6 +51,7 @@ dur = foldMusic prim seq xor or
     or = max
     xor = max
 
+-- | Scale IOIs
 -- mul :: Float -> Music a -> Music a
 -- mul s = foldMusic prim Seq Xor Or
 --   where
@@ -59,5 +68,6 @@ scaleDur s = foldMusic prim (:+:) (:=:) (:#:)
 collapse :: C.AudioSample a => Music a -> C.Signal a
 collapse (Prim dur ph) = C.phasor dur  (iois ph) (imps ph)
 collapse (m1 :+: m2)   = C.seq2 (collapse m1) (collapse m2)
-collapse (m1 :#: m2)   = C.mix2 (collapse m1) (collapse m2)
-collapse (m1 :=: m2)   = C.mix2 (collapse m1) (collapse m2)
+collapse (m1 :#: m2)   = C.xormix2 (collapse m1) (collapse m2)
+collapse (m1 :=: m2)   = C.ormix2 (collapse m1) (collapse m2)
+

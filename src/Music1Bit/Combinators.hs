@@ -2,10 +2,6 @@
 
 module Music1Bit.Combinators where
 
-
--- import           Data.Bits
-import qualified Data.Vector     as V
--- import Data.Map.Strict as Map
 import           Data.List       as L
 
 import           Music1Bit.Types
@@ -54,12 +50,6 @@ seq2 :: Signal a -> Signal a -> Signal a
 seq2 (Signal xf xd) (Signal yf yd) =
     Signal (\t -> if t < fromIntegral xd then xf t else yf (t - fromIntegral xd)) (xd + yd)
 
-seq :: [Signal a] -> Signal a
-seq ss = Signal (\t -> train V.! (fromIntegral t `mod` len)) len
-  where
-    train = V.fromList $ concatMap run ss
-    len = V.length train
-
 newdur :: Dur -> Signal a -> Signal a
 newdur d (Signal f _) = Signal f d
 
@@ -70,15 +60,10 @@ xormix2 (Signal xf xd) (Signal yf yd) = Signal (\t -> xf t `xormix` yf t) (max x
 ormix2 :: AudioSample a => Signal a -> Signal a -> Signal a
 ormix2 (Signal xf xd) (Signal yf yd) = Signal (\t -> xf t `ormix` yf t) (max xd yd)
 
--- -- | Mix many signals together.
--- mix :: [Signal] -> Signal
--- mix ss = foldr mix2 (silence totalDur) ss
---     where
---         totalDur = maximum $ map dur ss
-
 -- | Render a Signal into a list of Ticks
 run :: Signal a -> [a]
 run (Signal f d) = map f [0 .. fromIntegral d - 1]
+
 
 -- -- reverse :: Signal a -> Signal a
 -- -- reverse (Signal f) = Signal $ \t -> f (- t)

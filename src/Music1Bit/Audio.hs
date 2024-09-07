@@ -41,4 +41,4 @@ writeMono rate filename chunk =
 
 writeStereo rate filename chunk =
   SoxLib.withWrite (writerInfo 2 rate 16) filename $ \fmt ->
-    SoxLib.writeStorableVectorLazy fmt $ SVL.pack 4000 chunk
+    SoxLib.writeStorableVectorLazy fmt $ SVL.pack 8000 chunk

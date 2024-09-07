@@ -8,18 +8,18 @@ import           Music1Bit.Music       as M
 
 
 -- | polyrhythmic clusters
-pre1 =  M.train (reverse [20, 200 .. 10001]) [(False, True)]
-pre2 = M.train (reverse [20, 200 .. 10007]) [(True, True)]
-pre3 = M.train (reverse [19, 200 .. 10012]) [(True, False)]
+pre1 =  M.train (reverse [9, 100 .. 10004]) [(False, True)]
+pre2 = M.train (reverse [9, 100 .. 10007]) [(True, True)]
+pre3 = M.train (reverse [8, 100 .. 10011]) [(True, False)]
 pre = M.ormix [pre1, pre2, pre3]
 
-post1 = M.train [13, 200 .. 12002] [(True, True)]
-post2 = M.train [13, 200 .. 12008] [(True, True)]
-post3 = M.train [12, 200 .. 12021] [(True, True)]
+post1 = M.train [13, 200 .. 12002] [(False, True)]
+post2 = M.train [13, 200 .. 12008] [(True, False)]
+post3 = M.train [12, 200 .. 12001] [(True, True)]
 post = M.ormix [post1, post2, post3]
 
 count = 12000000
--- count = 300000
+-- count = 100000
 
 shiftedPhasor a i n = M.train [i] [a] :+: M.phasor count [n] [a]
 

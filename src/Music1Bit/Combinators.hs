@@ -40,6 +40,7 @@ phasor dur iois as = Signal f dur
             where
                 t' = fromIntegral t `mod` cycleDur
                 idx = L.elemIndex t' integral'
+                -- TODO use Map
 
 -- | Constant signal.
 constant :: a -> Dur -> Signal a

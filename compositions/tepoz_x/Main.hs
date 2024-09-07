@@ -5,18 +5,29 @@ import           Music1Bit.Combinators as C
 import           Music1Bit.Music       as M
 
 
-count = 1000000
+count = 8000000
+freq = 420
 
-shiftedPhasor :: Int -> Int -> Music
-shiftedPhasor i n = M.Prim (M.Imp i) :+: M.phasor count [n]
+pre1 = M.train (reverse [20, 200 .. 13001]) [(True, False)]
+pre2 = M.train (reverse [20, 200 .. 13000]) [(False, True)]
+pre = M.ormix [pre1, pre2]
 
-c1 = M.parallel $ zipWith shiftedPhasor [30, 1000 ..] [19000 .. 19019]
---c1 = M.parallel $ zipWith shiftedPhasor [30, 1000 ..] [3000 .. 3020]
+post1 = M.train [123, 200 .. 7002] [(False, True)]
+post2 = M.train [120, 200 .. 7000] [(True, False)]
+post = M.ormix [post1, post2]
 
---
-signal = M.collapse c1
-music = map (C.sample signal) [0 .. fromIntegral (C.dur signal)]
+p1 = M.phasor count [freq] [(True, False)]
+
+p2a = M.train (replicate (count `div` freq `div` 3)  (freq + 1)) [(False, True)]
+p2b = M.train (replicate (count `div` freq `div` 3) (freq - 1)) [(False, True)]
+p2c = M.train (replicate (count `div` freq `div` 3) (freq + 1)) [(False, True)]
+
+-- p2b = M.phasor (count `div` 3) [freq - 1] [(False, True)]
+-- p2c = M.phasor (count `div` 3) [freq + 1] [(False, True)]
+p2 = M.sequential [p2a, p2b, p2c]
+
+music = M.sequential [pre, M.xormix [p1, p2], post]
 
 
 main :: IO ()
-main = toWav "tepoz_x.wav" 44100 music
+main = toWav2 "tepoz_x.wav" 44100 $ C.run (M.collapse music)

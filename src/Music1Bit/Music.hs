@@ -59,11 +59,10 @@ dur = foldMusic prim seq xor or
     xor = max
 
 -- | Scale IOIs
--- mul :: Float -> Music a -> Music a
--- mul s = foldMusic prim Seq Xor Or
---   where
---     prim (Imp a ioi)         = Prim $ Imp a $ ceiling (s * fromIntegral ioi)
---     prim (Phasor a iois dur) = Prim $ Phasor a (map (ceiling . (*s) . fromIntegral) iois) dur
+mul :: Float -> Music a -> Music a
+mul s = foldMusic prim (:+:) (:=:) (:#:)
+  where
+    prim dur (Phasor iois as) = Prim dur $ Phasor (map (ceiling . (*s) . fromIntegral) iois) as
 
 -- | Change Music duration by a scalar factor
 scaleDur :: Float -> Music a -> Music a

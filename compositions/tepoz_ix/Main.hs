@@ -6,9 +6,9 @@ import           Music1Bit.Audio       as Audio
 import           Music1Bit.Combinators as C
 import           Music1Bit.Music       as M
 
-type IR a = [(a, Music -> Music)]
+type IR a b = [(a, Music b -> Music b)]
 
-interpret :: (Eq a, Show a) => LSys a -> IR a -> Music -> Music
+interpret :: (Eq a, Show a) => LSys a -> IR a b -> Music b -> Music b
 interpret (a :. b) r m = interpret a r (interpret b r m)
 interpret (a :+ b) r m = interpret a r m M.:+: interpret b r m
 interpret Id r m = m
@@ -19,10 +19,10 @@ interpret (N x) r m = case lookup x r of
 
 data LFun = Scale | Harm | Same | Up | Down deriving (Eq, Ord, Show)
 
-ir :: IR LFun
+ir :: IR LFun Bool
 ir = [
   (Scale, M.scaleDur 1.5),
-  (Harm, \m -> m M.:=: M.phasor (M.dur m) [502, 401]),
+  (Harm, \m -> m M.:=: M.phasor (M.dur m) [502, 401] [True]),
   (Same, id),
   (Up, M.mul 2),
   (Down, M.mul 0.5)]
@@ -50,12 +50,12 @@ r1k = Rule same sc
 
 g1 = Grammar down (Uni [r1a, r1b, r1c, r1d, r1e, r1f, r1g, r1h, r1i, r1j, r1k ])
 
-t1 n = interpret (L.gen L.replFun g1 3 !! n) ir (M.phasor 400 [300, 400])
+t1 n = interpret (L.gen L.replFun g1 3 !! n) ir (M.phasor 400 [300, 400] [True])
 
-pre = M.sequential $ map M.imp $ reverse [20, 200 .. 13001]
-post = M.sequential $ map M.imp [13, 100 .. 9002]
+pre = M.train (reverse [20, 200 .. 13001]) [True]
+post = M.train [3, 100 .. 7002] [True]
 
 music = M.sequential [pre, t1 17, post]
 
 main :: IO ()
-main = toWav "tepoz_ix.wav" 44100 $ C.run $ M.collapse music
+main = toWav "test.wav" 44100 $ C.run $ M.collapse music

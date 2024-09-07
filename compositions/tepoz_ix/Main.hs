@@ -24,8 +24,8 @@ ir = [
   (Scale, M.scaleDur 1.5),
   (Harm, \m -> m M.:=: M.phasor (M.dur m) [502, 401] [True]),
   (Same, id),
-  (Up, M.mul 2),
-  (Down, M.mul 0.5)]
+  (Up, M.scaleIois 2),
+  (Down, M.scaleIois 0.5)]
 
 sc = N Scale
 harm = N Harm

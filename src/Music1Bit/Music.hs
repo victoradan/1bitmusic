@@ -59,8 +59,8 @@ dur = foldMusic prim seq xor or
     xor = max
 
 -- | Scale IOIs
-mul :: Float -> Music a -> Music a
-mul s = foldMusic prim (:+:) (:=:) (:#:)
+scaleIois :: Float -> Music a -> Music a
+scaleIois s = foldMusic prim (:+:) (:=:) (:#:)
   where
     prim dur (Phasor iois as) = Prim dur $ Phasor (map (ceiling . (*s) . fromIntegral) iois) as
 

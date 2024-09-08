@@ -26,7 +26,7 @@ executable tepoz-x
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
-    build-depends:     base >= 4.7 && < 5, 1bitmusic
+    build-depends:     base >= 4.7 && < 5, random, 1bitmusic
 
     -- Directories containing source files.
     -- hs-source-dirs:

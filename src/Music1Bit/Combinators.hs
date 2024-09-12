@@ -2,7 +2,8 @@
 
 module Music1Bit.Combinators where
 
-import           Data.List       as L
+import           Data.HashMap.Strict as HashMap
+import           Data.Maybe
 
 import           Music1Bit.Types
 
@@ -34,13 +35,11 @@ phasor dur iois as = Signal f dur
         integral' = take cycleLen $ Prelude.cycle integral
         as' = take cycleLen $ Prelude.cycle as
         f t =
-            case idx of
-                Nothing -> zero
-                Just n  -> as' !! n
+            Data.Maybe.fromMaybe zero idx
             where
                 t' = fromIntegral t `mod` cycleDur
-                idx = L.elemIndex t' integral'
-                -- TODO use Map
+                m = HashMap.fromList $ zip integral' as'
+                idx = HashMap.lookup t' m
 
 -- | Constant signal.
 constant :: a -> Dur -> Signal a
@@ -56,6 +55,7 @@ newdur d (Signal f _) = Signal f d
 
 -- | xor two signals together.
 xormix2 :: AudioSample a => Signal a -> Signal a -> Signal a
+-- TODO need to return zero when t > xd, for Signal x, and t > yd, for Signal y
 xormix2 (Signal xf xd) (Signal yf yd) = Signal (\t -> xf t `xormix` yf t) (max xd yd)
 
 ormix2 :: AudioSample a => Signal a -> Signal a -> Signal a
@@ -63,7 +63,7 @@ ormix2 (Signal xf xd) (Signal yf yd) = Signal (\t -> xf t `ormix` yf t) (max xd 
 
 -- | Render a Signal into a list of Ticks
 run :: Signal a -> [a]
-run (Signal f d) = map f [0 .. fromIntegral d - 1]
+run (Signal f d) = Prelude.map f [0 .. fromIntegral d - 1]
 
 
 -- -- reverse :: Signal a -> Signal a

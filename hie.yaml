@@ -1,5 +1,5 @@
 # this file is for setting up the haskell-language-server.
 # https://github.com/haskell/hie-bios#stack
 cradle:
-  # stack:
-  cabal:
+  stack:
+  # cabal:

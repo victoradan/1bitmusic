@@ -19,11 +19,13 @@ interpret (N x) r m = case lookup x r of
 
 data LFun = Scale | Harm | Same | Up | Down deriving (Eq, Ord, Show)
 
-ir :: IR LFun Bool
+flipTuple (a, b) = (not a, not b)
+
+ir :: IR LFun (Bool, Bool)
 ir = [
   (Scale, M.scaleDur 1.5),
-  (Harm, \m -> m M.:=: M.phasor (M.dur m) [502, 401] [True]),
-  (Same, id),
+  (Harm, \m -> m :=: M.phasor (M.dur m) [502, 401] [(False, True)]),
+  (Same, M.foldMusic (\d p -> Prim d $ fmap flipTuple p) (:+:) (:=:) (:#:)), -- flip channels
   (Up, M.scaleIois 2),
   (Down, M.scaleIois 0.5)]
 
@@ -50,12 +52,12 @@ r1k = Rule same sc
 
 g1 = Grammar down (Uni [r1a, r1b, r1c, r1d, r1e, r1f, r1g, r1h, r1i, r1j, r1k ])
 
-t1 n = interpret (L.gen L.replFun g1 3 !! n) ir (M.phasor 400 [300, 400] [True])
+t1 n = interpret (L.gen L.replFun g1 3 !! n) ir (M.phasor 400 [300, 400] [(True, False)])
 
-pre = M.train (reverse [20, 200 .. 13001]) [True]
-post = M.train [3, 100 .. 7002] [True]
+pre = M.train (reverse [20, 200 .. 13001]) [(True, True)]
+post = M.train [3, 120 .. 7002] [(True, True)]
 
 music = M.sequential [pre, t1 17, post]
 
 main :: IO ()
-main = toWav "test.wav" 44100 $ C.run $ M.collapse music
+main = toWav2 "test.wav" 44100 $ C.run $ M.collapse music

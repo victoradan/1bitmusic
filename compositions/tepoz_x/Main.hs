@@ -7,9 +7,14 @@ import           Music1Bit.Combinators as C
 import           Music1Bit.Music       as M
 
 
-count = 1000000
--- count = 9000000
-freq = 410
+rotation count period = M.xormix [p1, p2]
+    where
+        p1 = M.phasor count [period] [(True, False)]
+        p2a = M.train (replicate (count `div` period `div` 3)  (period + 1)) [(False, True)]
+        p2b = M.train (replicate (count `div` period `div` 3) (period - 1)) [(False, True)]
+        p2c = M.train (replicate (count `div` period `div` 3) (period + 1)) [(False, True)]
+        p2 = M.sequential [p2a, p2b, p2c]
+
 
 pre1 = M.train (reverse [100, 200 .. 8001]) [(True, False)]
 pre2 = M.train (reverse [102, 200 .. 8000]) [(True, True)]
@@ -19,19 +24,22 @@ post1 = M.train [120, 200 .. 7002] [(False, True)]
 post2 = M.train [123, 200 .. 7000] [(True, False)]
 post = M.ormix [post1, post2]
 
-p1 = M.phasor count [freq] [(True, False)]
-
-p2a = M.train (replicate (count `div` freq `div` 3)  (freq + 1)) [(False, True)]
-p2b = M.train (replicate (count `div` freq `div` 3) (freq - 1)) [(False, True)]
-p2c = M.train (replicate (count `div` freq `div` 3) (freq + 1)) [(False, True)]
--- p2b = M.phasor (count `div` 3) [freq - 1] [(False, True)]
--- p2c = M.phasor (count `div` 3) [freq + 1] [(False, True)]
-p2 = M.sequential [p2a, p2b, p2c]
-
 noise1 = M.phasor count (700000 : take 181 (randomRs (2,7) (mkStdGen 2))) [(False, True), (False, True), (True, True)]
-noise2 = M.phasor count (500011 : take 100 (randomRs (7,31) (mkStdGen 1))) [(True, False), (True, False), (True, True)]
+noise2 = M.phasor count (900011 : take 94 (randomRs (7,31) (mkStdGen 1))) [(True, False), (True, False), (True, True)]
+noise3 = M.phasor count (1100023 : take 340 (randomRs (27,41) (mkStdGen 1))) [(True, False), (True, False), (True, True)]
 
-music = M.sequential [pre, M.xormix [p1, p2, noise1, noise2], post]
+noise = M.xormix [noise1, noise2, noise3]
+
+-- count = 2000000
+count = 12000000
+period = 410
+
+body = M.ormix [
+        rotation count period,
+        rotation count (round $ fromIntegral period / 2 / (7 / 6 )),
+        rotation count (round $ fromIntegral period / 2 / (9 / 8 )),
+        rotation count (round $ fromIntegral period  / (3 / 2 ) )]
+music = M.sequential [pre, M.xormix [body, noise], post]
 
 
 main :: IO ()

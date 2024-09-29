@@ -22,6 +22,8 @@ cabal.project.local
 
 *.wav
 *.flac
+*.mp4
+*.png
 *.pdf
 *.ps
 

@@ -7,12 +7,12 @@ import           Music1Bit.Combinators as C
 import           Music1Bit.Music       as M
 
 
-rotation count period = M.xormix [p1, p2]
+rotation count period divergence = M.xormix [p1, p2]
     where
         p1 = M.phasor count [period] [(True, False)]
-        p2a = M.train (replicate (count `div` period `div` 3)  (period + 1)) [(False, True)]
-        p2b = M.train (replicate (count `div` period `div` 3) (period - 1)) [(False, True)]
-        p2c = M.train (replicate (count `div` period `div` 3) (period + 1)) [(False, True)]
+        p2a = M.train (replicate (count `div` period `div` 3)  (period + divergence)) [(False, True)]
+        p2b = M.train (replicate (count `div` period `div` 3) (period - divergence)) [(False, True)]
+        p2c = M.train (replicate (count `div` period `div` 3) (period + divergence)) [(False, True)]
         p2 = M.sequential [p2a, p2b, p2c]
 
 
@@ -26,19 +26,19 @@ post = M.ormix [post1, post2]
 
 noise1 = M.phasor count (700000 : take 181 (randomRs (2,7) (mkStdGen 2))) [(False, True), (False, True), (True, True)]
 noise2 = M.phasor count (900011 : take 94 (randomRs (7,31) (mkStdGen 1))) [(True, False), (True, False), (True, True)]
-noise3 = M.phasor count (1100023 : take 340 (randomRs (27,41) (mkStdGen 1))) [(True, False), (True, False), (True, True)]
+noise3 = M.phasor count (1100023 : take 140 (randomRs (27,41) (mkStdGen 1))) [(True, False), (True, False), (True, True)]
 
 noise = M.xormix [noise1, noise2, noise3]
 
 -- count = 2000000
 count = 12000000
-period = 410
+period = 400
 
 body = M.ormix [
-        rotation count period,
-        rotation count (round $ fromIntegral period / 2 / (7 / 6 )),
-        rotation count (round $ fromIntegral period / 2 / (9 / 8 )),
-        rotation count (round $ fromIntegral period  / (3 / 2 ) )]
+        rotation count period 3,
+        rotation count (round $ fromIntegral period / 2 / (7 / 6 )) 2,
+        -- rotation count (round $ fromIntegral period / 2 / (9 / 8 )) 1,
+        rotation count (round $ fromIntegral period  / (3 / 2 ) ) 2]
 music = M.sequential [pre, M.xormix [body, noise], post]
 
 

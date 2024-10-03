@@ -7,13 +7,12 @@ import           Music1Bit.Combinators as C
 import           Music1Bit.Music       as M
 
 
-rotation count period divergence = M.xormix [p1, p2]
+rotation count period divergence divs = M.xormix [p1, p2]
     where
+        chorus = [M.train (replicate (count `div` period `div` divs)  (operator n period divergence)) [(False, True)] | n <- [0 .. divs -1]]
+        operator n = if even n then (+) else (-)
         p1 = M.phasor count [period] [(True, False)]
-        p2a = M.train (replicate (count `div` period `div` 3)  (period + divergence)) [(False, True)]
-        p2b = M.train (replicate (count `div` period `div` 3) (period - divergence)) [(False, True)]
-        p2c = M.train (replicate (count `div` period `div` 3) (period + divergence)) [(False, True)]
-        p2 = M.sequential [p2a, p2b, p2c]
+        p2 = M.sequential chorus
 
 
 pre1 = M.train (reverse [100, 200 .. 8001]) [(True, False)]
@@ -35,10 +34,10 @@ count = 12000000
 period = 400
 
 body = M.ormix [
-        rotation count period 3,
-        rotation count (round $ fromIntegral period / 2 / (7 / 6 )) 2,
+        rotation count period 3 3,
+        rotation count (round $ fromIntegral period / 2 / (7 / 6 )) 1 5,
         -- rotation count (round $ fromIntegral period / 2 / (9 / 8 )) 1,
-        rotation count (round $ fromIntegral period  / (3 / 2 ) ) 2]
+        rotation count (round $ fromIntegral period  / (3 / 2 ) ) 2 4]
 music = M.sequential [pre, M.xormix [body, noise], post]
 
 
